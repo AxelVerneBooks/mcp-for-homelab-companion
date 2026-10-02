@@ -1,0 +1,37 @@
+name: mcp-recipe-01
+
+# Recipe 01 — Read-Only Media Librarian (works OOTB, stdio transport)
+#
+# TRANSPORT NOTE (book, Chapter 3): the reference filesystem server is a
+# stdio MCP server — it has NO port and is NOT reachable over HTTP. Your
+# client spawns it as a subprocess; that's the whole point of stdio.
+# `docker compose up` therefore only *validates* the setup (image pull,
+# volume mount, command shape). The wiring happens in your client config.
+#
+# The demo media tree (./demo-media) lets you test the mount OOTB.
+# For real use set MEDIA_DIR in .env and use the second volume line.
+
+services:
+  media-mcp:
+    # PLACEHOLDER TAG — pin the current release of the reference filesystem server
+    image: mcp/filesystem:vX.Y.Z
+    # Allowed directories are passed as CLI args (the container-side path).
+    command: ["/media"]
+    volumes:
+      # Demo tree (OOTB):
+      - ./demo-media:/media:ro
+      # Real tree (set MEDIA_DIR in .env, then swap the lines):
+      # - ${MEDIA_DIR}:/media:ro
+    # Chapter 7 rule: a read-only librarian has no business on any network.
+    network_mode: none
+
+  # Validation helper only — checks the mount is readable and exits 0.
+  # Run: docker compose run --rm mount-check
+  mount-check:
+    image: library/alpine:3.20
+    profiles: ["tools"]
+    volumes:
+      - ./demo-media:/media:ro
+    command: ["sh", "-c", "test -d /media && echo 'mount OK (read-only)' && ls -A /media | head"]
+    read_only: true
+    network_mode: none

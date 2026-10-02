@@ -1,0 +1,23 @@
+name: mcp-recipe-03
+
+# Recipe 03 — Home Assistant Concierge (needs backend)
+#
+# Requires: Home Assistant reachable at HASS_URL, plus a long-lived access
+# token from a DEDICATED user (houseguest-scoped permissions — book Ch. 5).
+# The container starts and errors loudly until .env is filled: that is the
+# designed failure mode (loud, early, honest).
+
+services:
+  ha-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community HA MCP server
+    image: ha-mcp:vX.Y.Z
+    environment:
+      HASS_URL: ${HASS_URL}
+      HASS_TOKEN: ${HASS_TOKEN}
+    ports:
+      - "9103:9103"
+    networks: [ha-mcp-net]
+    restart: unless-stopped
+
+networks:
+  ha-mcp-net: {}

@@ -1,0 +1,16 @@
+# secrets — the only files that should never, ever land here
+.env
+*.env
+!*.env.example
+secrets/
+
+# runtime state
+data/
+logs/
+*.log
+node_modules/
+__pycache__/
+.venv/
+
+# local testing artifacts
+tools/.smoke-results/

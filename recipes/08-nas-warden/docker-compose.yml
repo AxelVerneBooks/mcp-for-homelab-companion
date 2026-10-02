@@ -1,0 +1,17 @@
+name: mcp-recipe-08
+
+# Recipe 08 — NAS Health Warden (needs backend)
+#
+# Requires: TrueNAS SCALE with an API key for a dedicated user, READ-ONLY
+# (book, Chapter 5 — storage servers get reads, full stop).
+
+services:
+  truenas-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community truenas-mcp
+    image: truenas-mcp:vX.Y.Z
+    environment:
+      TN_URL: ${TN_URL}      # wss://truenas.local/websocket
+      TN_KEY: ${TN_KEY}
+    ports:
+      - "9108:9108"
+    restart: unless-stopped

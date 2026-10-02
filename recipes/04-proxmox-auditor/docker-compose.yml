@@ -1,0 +1,19 @@
+name: mcp-recipe-04
+
+# Recipe 04 — Proxmox Auditor (needs backend)
+#
+# Requires: a Proxmox VE node reachable at PVE_HOST and an API token with
+# the PVEAuditor role (book, Chapter 5). Starts and errors loudly until
+# .env is filled.
+
+services:
+  pve-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community proxmox-mcp
+    image: proxmox-mcp:vX.Y.Z
+    environment:
+      PVE_HOST: ${PVE_HOST}
+      PVE_TOKEN: ${PVE_TOKEN}   # format: user@realm!tokenid=uuid-secret
+      VERIFY_TLS: ${VERIFY_TLS:-true}
+    ports:
+      - "9104:9104"
+    restart: unless-stopped

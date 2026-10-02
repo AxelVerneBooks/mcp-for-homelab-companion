@@ -1,0 +1,18 @@
+name: mcp-recipe-07
+
+# Recipe 07 — Pi-hole Query Detective (needs backend)
+#
+# Requires: Pi-hole v6 with an API token/password for a read-only use.
+# Note: Pi-hole v6 changed auth (session app-password); pin a server
+# release matching your Pi-hole major version (book, Chapter 5).
+
+services:
+  pihole-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community pihole-mcp
+    image: pihole-mcp:vX.Y.Z
+    environment:
+      PIHOLE_URL: ${PIHOLE_URL}
+      PIHOLE_TOKEN: ${PIHOLE_TOKEN}
+    ports:
+      - "9107:9107"
+    restart: unless-stopped

@@ -1,0 +1,35 @@
+name: mcp-recipe-10
+
+# Recipe 10 — The Custom Front Desk (works OOTB)
+#
+# The only recipe in the repo that serves MCP over HTTP out of the box,
+# because it brings its own backend: a mock pool-controller API that
+# stands in for the vendor's cloud service (book, Chapter 6).
+#
+#   pool-api  → the "vendor" API (mock, baked in)
+#   pool-mcp  → your front desk: two read-only tools over MCP on :9110
+#
+# Point it at the real vendor API later by setting POOL_API_URL +
+# POOL_API_KEY in .env and removing the pool-api service.
+
+services:
+  pool-api:
+    build:
+      dockerfile: mock-api.Dockerfile
+    networks: [pool-net]
+
+  pool-mcp:
+    build:
+      dockerfile: Dockerfile
+    environment:
+      POOL_API_URL: http://pool-api:8080
+      POOL_API_KEY: ${POOL_API_KEY:-}     # real key lives in .env, never here
+      PORT: "9110"
+    ports:
+      - "9110:9110"
+    networks: [pool-net]
+    depends_on: [pool-api]
+    restart: unless-stopped
+
+networks:
+  pool-net: {}

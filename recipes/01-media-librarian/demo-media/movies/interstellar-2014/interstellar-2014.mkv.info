@@ -1,0 +1,3 @@
+Demo file for the Recipe 01 smoke test.
+In a real lab this directory holds your media library; the MCP server
+exposes it read-only to your assistant.

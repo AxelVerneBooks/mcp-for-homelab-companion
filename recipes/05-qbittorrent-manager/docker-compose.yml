@@ -1,0 +1,24 @@
+name: mcp-recipe-05
+
+# Recipe 05 — qBittorrent Night Manager (needs backend)
+#
+# Requires: qBittorrent with WebUI enabled and a DEDICATED account for the
+# assistant (qBit's permission model is coarse — the account is the scope).
+# The server shares a network with qBit and nothing else (book, Ch. 5).
+
+services:
+  qbit-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community qbit-mcp
+    image: qbit-mcp:vX.Y.Z
+    environment:
+      QBIT_URL: ${QBIT_URL}
+      QBIT_USER: ${QBIT_USER}
+      QBIT_PASS: ${QBIT_PASS}
+    ports:
+      - "9105:9105"
+    networks: [qbit-net]
+    restart: unless-stopped
+
+networks:
+  qbit-net:
+    external: true    # join the network your qBit container actually uses

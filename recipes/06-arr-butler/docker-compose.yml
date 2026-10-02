@@ -1,0 +1,18 @@
+name: mcp-recipe-06
+
+# Recipe 06 — Radarr Butler (needs backend)
+#
+# THE *ARR PATTERN: for Sonarr/Prowlarr/Lidarr, duplicate this service with
+# the family's MCP server image, a new container/port, and that app's API
+# key. One server per app — never share (book, Chapter 5).
+
+services:
+  radarr-mcp:
+    # PLACEHOLDER TAG — pin the current release of the community arr-mcp
+    image: arr-mcp:vX.Y.Z
+    environment:
+      ARR_URL: ${ARR_URL}
+      ARR_KEY: ${ARR_KEY}
+    ports:
+      - "9106:9106"
+    restart: unless-stopped

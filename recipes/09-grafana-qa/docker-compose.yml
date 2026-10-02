@@ -1,0 +1,18 @@
+name: mcp-recipe-09
+
+# Recipe 09 — Grafana Question Answerer (needs backend)
+#
+# Requires: Grafana with a service-account token holding the Viewer role
+# (Administration → Users → Service accounts). Viewer = reads everything,
+# touches nothing — the correct default for a metrics reader.
+
+services:
+  grafana-mcp:
+    # PLACEHOLDER TAG — pin the current release of the grafana MCP server
+    image: grafana-mcp:vX.Y.Z
+    environment:
+      GRAFANA_URL: ${GRAFANA_URL}
+      GRAFANA_TOKEN: ${GRAFANA_TOKEN}
+    ports:
+      - "9109:9109"
+    restart: unless-stopped

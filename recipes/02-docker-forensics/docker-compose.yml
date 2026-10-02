@@ -1,0 +1,22 @@
+name: mcp-recipe-02
+
+# Recipe 02 — Docker Forensics (validates OOTB; stdio transport in practice)
+#
+# TRANSPORT NOTE (book, Chapter 3): docker-mcp runs as a stdio server spawned
+# by your client (see the stanza in README.md). This compose file exists to
+# VALIDATE the socket mount + env shape on your host, not to serve HTTP.
+#
+# Chapter 7 Rule 3: this is the only recipe in the repo that touches the
+# Docker socket. Anything else asking for it is a bug.
+
+services:
+  socket-check:
+    # Validation service: proves the socket is visible and the env parses.
+    # Run: docker compose run --rm socket-check
+    image: library/alpine:3.20
+    environment:
+      ALLOW_LIST: ${ALLOW_LIST}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["sh", "-c", "test -S /var/run/docker.sock && echo 'socket visible (read-only check)' && echo \"ALLOW_LIST=$${ALLOW_LIST}\""]
+    read_only: true
