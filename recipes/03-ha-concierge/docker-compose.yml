@@ -3,21 +3,35 @@ name: mcp-recipe-03
 # Recipe 03 — Home Assistant Concierge (needs backend)
 #
 # Requires: Home Assistant reachable at HASS_URL, plus a long-lived access
-# token from a DEDICATED user (houseguest-scoped permissions — book Ch. 5).
-# The container starts and errors loudly until .env is filled: that is the
-# designed failure mode (loud, early, honest).
+# token from a DEDICATED, non-admin user (book, Ch. 5). The server starts
+# without HA, and every tool call errors loudly until .env is right — that
+# is the designed failure mode (loud, early, honest).
+#
+# Week one runs READ_ONLY_MODE=true: write tools are hidden from the menu
+# AND blocked at call time. Promotion = flip it in .env (README).
 
 services:
   ha-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community HA MCP server
-    image: ha-mcp:vX.Y.Z
+    image: ghcr.io/homeassistant-ai/ha-mcp:8.7.0
+    # The image's default command is the stdio server; this is the HTTP one.
+    command: ["ha-mcp-web"]
     environment:
-      HASS_URL: ${HASS_URL}
-      HASS_TOKEN: ${HASS_TOKEN}
+      HOMEASSISTANT_URL: ${HASS_URL}
+      HOMEASSISTANT_TOKEN: ${HASS_TOKEN}
+      READ_ONLY_MODE: ${READ_ONLY_MODE:-true}
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8086"
+      # The URL path is the shared secret clients must know (no other auth).
+      MCP_SECRET_PATH: /${MCP_SECRET_PATH:?set MCP_SECRET_PATH in .env (openssl rand -hex 24)}
     ports:
-      - "9103:9103"
+      - "9103:8086"
+    volumes:
+      - ha-mcp-state:/home/mcpuser/.ha-mcp
     networks: [ha-mcp-net]
     restart: unless-stopped
 
 networks:
   ha-mcp-net: {}
+
+volumes:
+  ha-mcp-state: {}

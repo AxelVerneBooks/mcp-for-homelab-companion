@@ -2,16 +2,28 @@ name: mcp-recipe-08
 
 # Recipe 08 — NAS Health Warden (needs backend)
 #
-# Requires: TrueNAS SCALE with an API key for a dedicated user, READ-ONLY
-# (book, Chapter 5 — storage servers get reads, full stop).
+# Requires: TrueNAS SCALE 25.04+ and a read-only API key for a dedicated
+# user (book, Chapter 5 — storage servers get reads, full stop).
+#
+# The server holds NO TrueNAS credentials: each client sends its own API
+# key as a bearer token. Because that key crosses the wire, MCP is served
+# over TLS (./certs — see README). Writes stay off: TRUENAS_MCP_ENABLE_WRITES
+# is unset on purpose.
 
 services:
   truenas-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community truenas-mcp
-    image: truenas-mcp:vX.Y.Z
+    image: ghcr.io/cedricziel/truenas-mcp:0.4.2
     environment:
-      TN_URL: ${TN_URL}      # wss://truenas.local/websocket
-      TN_KEY: ${TN_KEY}
+      TRUENAS_MCP_TARGET: ${TN_HOST}
+      # TrueNAS ships a self-signed cert; set false once it has a real one.
+      TRUENAS_MCP_TARGET_INSECURE: ${TN_INSECURE:-true}
+      TRUENAS_MCP_LISTEN: ":8443"
+      TRUENAS_MCP_TLS_CERT: /certs/tls.crt
+      TRUENAS_MCP_TLS_KEY: /certs/tls.key
+    volumes:
+      - ./certs:/certs:ro
     ports:
-      - "9108:9108"
+      - "9108:8443"
+    # No healthcheck: upstream's --healthcheck probes over plain HTTP and
+    # reports 400 when TLS is on (v0.4.2). Re-add it once that's fixed.
     restart: unless-stopped

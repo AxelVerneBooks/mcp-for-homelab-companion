@@ -14,3 +14,6 @@ __pycache__/
 
 # local testing artifacts
 tools/.smoke-results/
+
+# per-recipe TLS material (recipe 08 generates its own)
+recipes/*/certs/

@@ -2,17 +2,23 @@ name: mcp-recipe-07
 
 # Recipe 07 — Pi-hole Query Detective (needs backend)
 #
-# Requires: Pi-hole v6 with an API token/password for a read-only use.
-# Note: Pi-hole v6 changed auth (session app-password); pin a server
-# release matching your Pi-hole major version (book, Chapter 5).
+# Requires: Pi-hole v6 (the v6 REST API; v5 is not supported) and an app
+# password. Pi-hole has no read-only API accounts, so the lock lives in the
+# server: PIHOLE_READ_ONLY=true removes every write tool, enforced on each
+# call (book, Chapter 5).
 
 services:
   pihole-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community pihole-mcp
-    image: pihole-mcp:vX.Y.Z
+    image: ghcr.io/hexamatic/pihole-mcp:0.9.0
+    # Default transport is stdio; serve streamable HTTP for the compose stack.
+    command: ["-transport", "http", "-address", "0.0.0.0:8080"]
     environment:
       PIHOLE_URL: ${PIHOLE_URL}
-      PIHOLE_TOKEN: ${PIHOLE_TOKEN}
+      PIHOLE_PASSWORD: ${PIHOLE_PASSWORD}
+      PIHOLE_READ_ONLY: "true"
+      PIHOLE_HTTP_AUTH_TOKEN: ${PIHOLE_MCP_TOKEN:?set PIHOLE_MCP_TOKEN in .env (openssl rand -hex 32)}
+      # Host names clients use to reach this server (DNS-rebinding guard).
+      PIHOLE_ALLOWED_ORIGINS: localhost,127.0.0.1,${MCP_HOSTNAME:-localhost}
     ports:
-      - "9107:9107"
+      - "9107:8080"
     restart: unless-stopped

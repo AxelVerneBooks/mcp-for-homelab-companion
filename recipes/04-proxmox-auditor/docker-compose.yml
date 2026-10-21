@@ -2,18 +2,39 @@ name: mcp-recipe-04
 
 # Recipe 04 — Proxmox Auditor (needs backend)
 #
-# Requires: a Proxmox VE node reachable at PVE_HOST and an API token with
-# the PVEAuditor role (book, Chapter 5). Starts and errors loudly until
-# .env is filled.
+# Requires: a Proxmox VE node reachable at PVE_HOST and an API token for a
+# dedicated user holding the PVEAuditor role (book, Chapter 5). The server
+# starts without PVE; tool calls error loudly until .env is right.
+#
+# Two locks, on purpose: the PVEAuditor token can't change anything, and
+# MCP_TOOL_ALLOWLIST below hides every tool that would try.
 
 services:
   pve-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community proxmox-mcp
-    image: proxmox-mcp:vX.Y.Z
+    image: ghcr.io/rekklesna/proxmoxmcp-plus:v0.6.6
     environment:
-      PVE_HOST: ${PVE_HOST}
-      PVE_TOKEN: ${PVE_TOKEN}   # format: user@realm!tokenid=uuid-secret
-      VERIFY_TLS: ${VERIFY_TLS:-true}
+      # Native MCP over streamable HTTP (the image defaults to its OpenAPI bridge).
+      PROXMOX_MCP_MODE: mcp-http
+      MCP_TRANSPORT: STREAMABLE_HTTP
+      MCP_HOST: 0.0.0.0
+      MCP_PORT: "8000"
+      MCP_API_KEY: ${MCP_API_KEY:?set MCP_API_KEY in .env (openssl rand -hex 32)}
+      # Proxmox connection (no config.json needed; env is the fallback).
+      PROXMOX_HOST: ${PVE_HOST}
+      PROXMOX_PORT: ${PVE_PORT:-8006}
+      PROXMOX_USER: ${PVE_USER}
+      PROXMOX_TOKEN_NAME: ${PVE_TOKEN_NAME}
+      PROXMOX_TOKEN_VALUE: ${PVE_TOKEN_VALUE}
+      PROXMOX_VERIFY_SSL: ${PVE_VERIFY_SSL:-true}
+      PROXMOX_JOBS_SQLITE_PATH: /tmp/proxmox-jobs.sqlite3
+      # Read tools only. Unknown names fail startup, so a typo can't widen access.
+      MCP_TOOL_ALLOWLIST: >-
+        list_targets,get_nodes,get_node_status,get_node_time,list_bridges,
+        get_node_diagnostics,get_storage,get_node_storage,get_cluster_status,
+        list_jobs,get_job,get_vms,get_vm_config,get_vm_ip_addresses,
+        get_containers,get_container_config,get_container_ip,list_snapshots,
+        list_isos,list_templates,list_backups,get_node_syslog,get_task_log,
+        get_cluster_log,get_node_firewall_log,get_guest_firewall_log
     ports:
-      - "9104:9104"
+      - "9104:8000"
     restart: unless-stopped

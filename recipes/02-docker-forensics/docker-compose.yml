@@ -1,22 +1,74 @@
 name: mcp-recipe-02
 
-# Recipe 02 — Docker Forensics (validates OOTB; stdio transport in practice)
+# Recipe 02 — Docker Forensics (stdio transport, read-only Docker API)
 #
-# TRANSPORT NOTE (book, Chapter 3): docker-mcp runs as a stdio server spawned
-# by your client (see the stanza in README.md). This compose file exists to
-# VALIDATE the socket mount + env shape on your host, not to serve HTTP.
+# TRANSPORT NOTE (book, Chapter 3): mcp-server-docker is a stdio server your
+# client spawns (see the stanza in README.md). This stack provides what it
+# connects to: a READ-ONLY gate in front of the Docker socket.
+#
+#   socket-proxy  → the only service that touches /var/run/docker.sock.
+#                   HAProxy allowlist: GET on containers/images/networks/
+#                   volumes/info; every POST/DELETE answers 403.
+#   docker-mcp    → built locally from the pinned upstream tag; never
+#                   sees the socket, only tcp://socket-proxy:2375.
 #
 # Chapter 7 Rule 3: this is the only recipe in the repo that touches the
 # Docker socket. Anything else asking for it is a bug.
 
 services:
-  socket-check:
-    # Validation service: proves the socket is visible and the env parses.
-    # Run: docker compose run --rm socket-check
-    image: library/alpine:3.20
-    environment:
-      ALLOW_LIST: ${ALLOW_LIST}
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:v0.5.0
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    command: ["sh", "-c", "test -S /var/run/docker.sock && echo 'socket visible (read-only check)' && echo \"ALLOW_LIST=$${ALLOW_LIST}\""]
+    environment:
+      # API sections the assistant may READ. 0 = 403 for that section.
+      CONTAINERS: ${PROXY_CONTAINERS:-1}
+      IMAGES: ${PROXY_IMAGES:-1}
+      NETWORKS: ${PROXY_NETWORKS:-1}
+      VOLUMES: ${PROXY_VOLUMES:-1}
+      INFO: ${PROXY_INFO:-1}
+      # The security boundary: no POST/PUT/DELETE, so no start/stop/rm/pull.
+      POST: "0"
+      # Listen on IPv4 only (hosts without IPv6 otherwise fail to start).
+      DISABLE_IPV6: "1"
+    networks: [docker-ro]
+    restart: unless-stopped
+
+  # Built from the upstream tag; run by your client, not by `up`.
+  # Build once: docker compose build docker-mcp
+  docker-mcp:
+    build:
+      context: https://github.com/ckreiling/mcp-server-docker.git#v0.3.0
+    image: mcp-server-docker:0.3.0
+    profiles: ["tools"]
+    stdin_open: true
+    environment:
+      DOCKER_HOST: tcp://socket-proxy:2375
+    networks: [docker-ro]
+    depends_on: [socket-proxy]
+
+  # Validation helper: proves the gate answers reads and refuses writes.
+  # Run: docker compose run --rm gate-check
+  gate-check:
+    image: alpine:3.24.2
+    profiles: ["tools"]
+    networks: [docker-ro]
+    depends_on: [socket-proxy]
     read_only: true
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        wget -qO- http://socket-proxy:2375/version >/dev/null && echo 'read  /version          → allowed'
+        wget -qO- http://socket-proxy:2375/containers/json >/dev/null && echo 'read  /containers/json  → allowed'
+        if wget -qO- --post-data= http://socket-proxy:2375/containers/x/stop 2>&1 | grep -q 403; then
+          echo 'write /containers/x/stop → 403 (gate holds)'
+        else
+          echo 'write was NOT refused — check POST=0'; exit 1
+        fi
+
+networks:
+  docker-ro:
+    name: mcp-recipe-02-docker-ro
+    internal: true    # no route out: the gate is reachable only from this network

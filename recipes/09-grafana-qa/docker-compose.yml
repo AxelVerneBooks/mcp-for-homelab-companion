@@ -3,16 +3,29 @@ name: mcp-recipe-09
 # Recipe 09 — Grafana Question Answerer (needs backend)
 #
 # Requires: Grafana with a service-account token holding the Viewer role
-# (Administration → Users → Service accounts). Viewer = reads everything,
-# touches nothing — the correct default for a metrics reader.
+# (Administration → Users and access → Service accounts). Viewer = reads
+# everything, touches nothing — the correct default for a metrics reader.
+# --disable-write removes the server's write tools as a second lock.
 
 services:
   grafana-mcp:
-    # PLACEHOLDER TAG — pin the current release of the grafana MCP server
-    image: grafana-mcp:vX.Y.Z
+    image: grafana/mcp-grafana:2.1.1
+    # The image defaults to SSE; these flags override it (last flag wins).
+    command:
+      - -t
+      - streamable-http
+      - --address
+      - 0.0.0.0:8000
+      - --disable-write
+      # Host headers clients may use (DNS-rebinding guard; not authentication).
+      - --allowed-hosts
+      - localhost:9109,127.0.0.1:9109,${MCP_HOSTNAME:-localhost}:9109
     environment:
       GRAFANA_URL: ${GRAFANA_URL}
-      GRAFANA_TOKEN: ${GRAFANA_TOKEN}
+      GRAFANA_SERVICE_ACCOUNT_TOKEN: ${GRAFANA_TOKEN}
+      # Bearer token MCP clients must present.
+      MCP_GRAFANA_SERVER_TOKEN: ${GRAFANA_MCP_TOKEN:?set GRAFANA_MCP_TOKEN in .env (openssl rand -hex 32)}
+      GRAFANA_USAGE_STATS: disabled
     ports:
-      - "9109:9109"
+      - "9109:8000"
     restart: unless-stopped

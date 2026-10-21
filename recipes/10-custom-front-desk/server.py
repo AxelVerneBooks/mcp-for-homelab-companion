@@ -10,7 +10,7 @@ API with two READ-ONLY tools. This is the minimal "wrap anything" pattern:
   - write tools ship COMMENTED OUT (the Chapter 6 promotion ritual)
 
 Transport: streamable HTTP on :9110 (so the repo's smoke test can exercise
-a real handshake). For stdio, swap mcp.run() for mcp.run(stdio).
+a real handshake). For stdio, use mcp.run(transport="stdio").
 """
 
 import os

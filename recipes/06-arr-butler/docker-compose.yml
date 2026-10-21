@@ -2,17 +2,22 @@ name: mcp-recipe-06
 
 # Recipe 06 — Radarr Butler (needs backend)
 #
-# THE *ARR PATTERN: for Sonarr/Prowlarr/Lidarr, duplicate this service with
-# the family's MCP server image, a new container/port, and that app's API
-# key. One server per app — never share (book, Chapter 5).
+# THE *ARR PATTERN: one server per app — never share (book, Chapter 5).
+# For Sonarr/Lidarr/Prowlarr, copy this service, rename it, give it its own
+# host port, and swap RADARR_* for SONARR_* / LIDARR_* / PROWLARR_*.
+#
+# This server has NO caller authentication, so the port binds to loopback
+# by default (MCP_BIND). Widen it only on a network you trust.
 
 services:
   radarr-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community arr-mcp
-    image: arr-mcp:vX.Y.Z
+    image: ghcr.io/aplaceforallmystuff/mcp-arr:1.7.3
     environment:
-      ARR_URL: ${ARR_URL}
-      ARR_KEY: ${ARR_KEY}
+      MCP_TRANSPORT: http
+      HOST: 0.0.0.0
+      PORT: "3000"
+      RADARR_URL: ${ARR_URL}
+      RADARR_API_KEY: ${ARR_KEY}
     ports:
-      - "9106:9106"
+      - "${MCP_BIND:-127.0.0.1}:9106:3000"
     restart: unless-stopped

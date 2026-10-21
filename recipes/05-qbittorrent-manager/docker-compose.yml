@@ -2,23 +2,34 @@ name: mcp-recipe-05
 
 # Recipe 05 — qBittorrent Night Manager (needs backend)
 #
-# Requires: qBittorrent with WebUI enabled and a DEDICATED account for the
-# assistant (qBit's permission model is coarse — the account is the scope).
-# The server shares a network with qBit and nothing else (book, Ch. 5).
+# Requires: qBittorrent with the WebUI enabled. The server shares a network
+# with qBit and nothing else (book, Ch. 5), and answers only callers that
+# present QBIT_MCP_TOKEN.
+#
+# TRANSPORT NOTE: this server speaks the legacy SSE transport (GET /sse),
+# not streamable HTTP — the stanza in README.md says so explicitly.
 
 services:
   qbit-mcp:
-    # PLACEHOLDER TAG — pin the current release of the community qbit-mcp
-    image: qbit-mcp:vX.Y.Z
+    image: nicholaswilde/qbittorrent-mcp-rs:0.3.9
     environment:
-      QBIT_URL: ${QBIT_URL}
-      QBIT_USER: ${QBIT_USER}
-      QBIT_PASS: ${QBIT_PASS}
+      # Upstream quirk (v0.3.9): the single-instance keys carry a doubled
+      # prefix. The README's QBITTORRENT_HOST is silently ignored.
+      QBITTORRENT_QBITTORRENT_HOST: ${QBIT_HOST}
+      QBITTORRENT_QBITTORRENT_PORT: ${QBIT_PORT:-8080}
+      QBITTORRENT_QBITTORRENT_USERNAME: ${QBIT_USER}
+      QBITTORRENT_QBITTORRENT_PASSWORD: ${QBIT_PASS}
+      QBITTORRENT_SERVER_MODE: http
+      QBITTORRENT_HTTP_AUTH_TOKEN: ${QBIT_MCP_TOKEN:?set QBIT_MCP_TOKEN in .env (openssl rand -hex 32)}
+      # Lazy menu: only list_torrents + show_all_tools until the assistant asks
+      # for more. Smaller menu, cheaper context; NOT a security boundary.
+      QBITTORRENT_LAZY_MODE: "true"
     ports:
-      - "9105:9105"
+      - "9105:3000"
     networks: [qbit-net]
     restart: unless-stopped
 
 networks:
   qbit-net:
-    external: true    # join the network your qBit container actually uses
+    external: true                      # join the network your qBit container actually uses
+    name: ${QBIT_NETWORK:-qbittorrent_default}
