@@ -1,8 +1,8 @@
 # Mock vendor API for Recipe 10 — lets the front desk work OOTB.
-FROM python:3.12-slim
+FROM python:3.14.8-slim
 
 WORKDIR /app
-RUN pip install --no-cache-dir "fastapi>=0.115,<1" "uvicorn>=0.30,<1"
+RUN pip install --no-cache-dir "fastapi==0.156.5" "uvicorn==0.54.0"
 
 COPY mock-api.py .
 

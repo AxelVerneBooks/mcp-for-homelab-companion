@@ -1,0 +1,72 @@
+name: Validate recipes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    name: Discover recipes
+    runs-on: ubuntu-latest
+    outputs:
+      recipes: ${{ steps.list.outputs.recipes }}
+    steps:
+      - uses: actions/checkout@v7
+      - id: list
+        run: |
+          recipes=$(ls -d recipes/*/ | xargs -n1 basename | jq -R . | jq -cs .)
+          echo "recipes=$recipes" >> "$GITHUB_OUTPUT"
+
+  compose-config:
+    name: compose config · ${{ matrix.recipe }}
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe: ${{ fromJSON(needs.discover.outputs.recipes) }}
+    defaults:
+      run:
+        working-directory: recipes/${{ matrix.recipe }}
+    steps:
+      - uses: actions/checkout@v7
+
+      # Bare file: syntax and structure, with no .env present (how a fresh clone looks).
+      - name: docker compose config
+        run: docker compose config -q
+
+      # With the shipped example env: every variable the file uses must be documented.
+      - name: docker compose config (.env.example)
+        run: |
+          out=$(docker compose --env-file .env.example config 2>&1 >/dev/null)
+          echo "$out"
+          if grep -q 'variable is not set' <<<"$out"; then
+            echo "::error::.env.example is missing variables used by docker-compose.yml"
+            exit 1
+          fi
+
+      # Every image (compose services and Dockerfile FROM lines) must carry
+      # an explicit version tag or digest.
+      - name: Images are pinned
+        run: ../../tools/check-pins.sh .
+
+  smoke:
+    name: Smoke test (live recipes 01 + 10)
+    needs: compose-config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run tools/smoke.sh
+        run: ./tools/smoke.sh
+      - name: Upload smoke results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: smoke-results
+          path: tools/.smoke-results/
+          include-hidden-files: true

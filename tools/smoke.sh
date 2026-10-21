@@ -58,7 +58,7 @@ done
 if [[ $up -eq 1 ]] && curl -sf -m 15 http://127.0.0.1:9110/mcp \
     -H 'Content-Type: application/json' \
     -H 'Accept: application/json, text/event-stream' \
-    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2026-07-28","capabilities":{},"clientInfo":{"name":"smoke","version":"0.1"}}}' \
+    -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"smoke","version":"0.1"}}}' \
     > "$OUT/10.init.json"; then
   if grep -q '"serverInfo' "$OUT/10.init.json"; then
     ok "MCP initialize handshake (serverInfo present)"
@@ -67,6 +67,26 @@ if [[ $up -eq 1 ]] && curl -sf -m 15 http://127.0.0.1:9110/mcp \
   fi
 else
   bad "no MCP answer on :9110 — see $OUT/10.init.json"
+fi
+
+# Full round trip: initialize → initialized → tools/call against the mock API.
+mcp_post() {  # $1 = JSON-RPC body; extra args go to curl
+  local body="$1"; shift
+  curl -s -m 15 http://127.0.0.1:9110/mcp \
+    -H 'Content-Type: application/json' \
+    -H 'Accept: application/json, text/event-stream' "$@" -d "$body"
+}
+sid="$(mcp_post '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-11-25","capabilities":{},"clientInfo":{"name":"smoke","version":"0.1"}}}' -D - -o /dev/null \
+  | tr -d '\r' | awk -F': ' 'tolower($1)=="mcp-session-id"{print $2}')"
+if [[ -n "$sid" ]]; then
+  mcp_post '{"jsonrpc":"2.0","method":"notifications/initialized"}' -H "Mcp-Session-Id: $sid" -o /dev/null
+  mcp_post '{"jsonrpc":"2.0","id":2,"method":"tools/call","params":{"name":"get_pool_status","arguments":{}}}' \
+    -H "Mcp-Session-Id: $sid" > "$OUT/10.call.txt" || true
+fi
+if grep -q 'water_temp_c' "$OUT/10.call.txt" 2>/dev/null; then
+  ok "tools/call get_pool_status reached the mock API"
+else
+  bad "tool call failed — see $OUT/10.call.txt"
 fi
 
 echo

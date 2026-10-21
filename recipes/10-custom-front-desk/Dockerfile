@@ -1,11 +1,13 @@
 # Recipe 10 — The Custom Front Desk (book, Chapter 6)
-# Pin the base tag when you adopt this for a real service.
-FROM python:3.12-slim
+# Base and dependencies are pinned to exact, tested versions (book, Ch. 5).
+FROM python:3.14.8-slim
 
 WORKDIR /app
 
-# MCP SDK + HTTP client. Pin to the versions you tested with.
-RUN pip install --no-cache-dir "mcp>=1.2,<2" "httpx>=0.27,<1" "uvicorn>=0.30,<1"
+# MCP SDK + HTTP client, pinned to the versions the smoke test passes with.
+# mcp stays on the 1.x line: 2.x renamed FastMCP to MCPServer, and server.py
+# follows the book's FastMCP code.
+RUN pip install --no-cache-dir "mcp==1.30.0" "httpx==0.28.1" "uvicorn==0.54.0"
 
 COPY server.py .
 
