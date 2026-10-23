@@ -1,0 +1,27 @@
+name: mcp-recipe-15
+
+# Recipe 15 — Prometheus Analyst (needs backend)
+#
+# Requires: Prometheus reachable at PROMETHEUS_URL. The server only issues
+# reads (PromQL queries, metadata, targets) — the Prometheus HTTP API has
+# no write path unless you enabled admin APIs, and you shouldn't have.
+# Pairs with recipe 09: Grafana for dashboards, this for raw PromQL.
+
+services:
+  prometheus-mcp:
+    # PINNED — pab1it0/prometheus-mcp-server. Bump deliberately.
+    image: ghcr.io/pab1it0/prometheus-mcp-server:1.6.2
+    environment:
+      PROMETHEUS_URL: ${PROMETHEUS_URL}
+      PROMETHEUS_USERNAME: ${PROMETHEUS_USERNAME:-}
+      PROMETHEUS_PASSWORD: ${PROMETHEUS_PASSWORD:-}
+      PROMETHEUS_MCP_SERVER_TRANSPORT: http
+      PROMETHEUS_MCP_BIND_HOST: 0.0.0.0
+      PROMETHEUS_MCP_BIND_PORT: "8080"
+    ports:
+      - "9115:8080"
+    networks: [prometheus-mcp-net]
+    restart: unless-stopped
+
+networks:
+  prometheus-mcp-net: {}

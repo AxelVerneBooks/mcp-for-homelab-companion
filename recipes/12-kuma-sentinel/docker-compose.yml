@@ -1,0 +1,26 @@
+name: mcp-recipe-12
+
+# Recipe 12 — Uptime Kuma Sentinel (needs backend)
+#
+# Requires: Uptime Kuma **2.x** at UPTIME_KUMA_URL (1.x is not supported by
+# this server) plus login credentials. Kuma has a single admin account and
+# no read-only role, and this server's HTTP endpoint is unauthenticated —
+# so the port is bound to localhost and the network is isolated (README).
+
+services:
+  kuma-mcp:
+    # PINNED — DavidFuchs/mcp-uptime-kuma. Bump deliberately.
+    image: davidfuchs/mcp-uptime-kuma:0.12.1
+    command: ["-t", "streamable-http"]
+    environment:
+      UPTIME_KUMA_URL: ${UPTIME_KUMA_URL}
+      UPTIME_KUMA_USERNAME: ${UPTIME_KUMA_USERNAME}
+      UPTIME_KUMA_PASSWORD: ${UPTIME_KUMA_PASSWORD}
+      PORT: "3000"
+    ports:
+      - "127.0.0.1:9112:3000"   # unauthenticated endpoint: localhost only
+    networks: [kuma-mcp-net]
+    restart: unless-stopped
+
+networks:
+  kuma-mcp-net: {}

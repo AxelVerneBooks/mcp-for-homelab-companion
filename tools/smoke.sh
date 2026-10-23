@@ -2,6 +2,8 @@
 # smoke.sh — validate the whole companion repo in one pass.
 #
 # Tier 1: `docker compose config` validates every recipe (syntax, env shape).
+#         Recipes marked `# PINNED` must resolve every image to an explicit
+#         release tag (no `latest`, no `vX.Y.Z` placeholder).
 # Tier 2: live checks on the two recipes that are self-contained:
 #           - 01-media-librarian: mount-check (demo tree readable, read-only)
 #           - 10-custom-front-desk: full MCP initialize handshake over HTTP
@@ -24,6 +26,20 @@ for dir in "$ROOT"/recipes/*/; do
     ok "$name compose config"
   else
     bad "$name compose config — see $OUT/$name.config.err"
+  fi
+done
+
+echo
+echo "== Tier 1b: pinned image tags (recipes marked PINNED) =="
+for dir in "$ROOT"/recipes/*/; do
+  name="$(basename "$dir")"
+  grep -q "# PINNED" "$dir/docker-compose.yml" || continue
+  images="$(docker compose -f "$dir/docker-compose.yml" config --images 2>/dev/null)"
+  unpinned="$(echo "$images" | grep -Ev ':[0-9][A-Za-z0-9._-]*$' || true)"
+  if [[ -n "$images" && -z "$unpinned" ]]; then
+    ok "$name pinned ($images)"
+  else
+    bad "$name has unpinned image(s): ${unpinned:-<none resolved>}"
   fi
 done
 

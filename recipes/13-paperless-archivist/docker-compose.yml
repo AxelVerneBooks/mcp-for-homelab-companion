@@ -1,0 +1,24 @@
+name: mcp-recipe-13
+
+# Recipe 13 — Paperless-ngx Archivist (needs backend)
+#
+# Requires: Paperless-ngx 3.x at PAPERLESS_URL and an API token belonging
+# to a DEDICATED user with view-only permissions (book, Ch. 5: scope at the
+# source). The server's HTTP mode has no auth of its own, so the port is
+# bound to localhost and the network is isolated.
+
+services:
+  paperless-mcp:
+    # PINNED — cubinet-code/paperless-ngx-mcp (major tracks Paperless major). Bump deliberately.
+    image: ghcr.io/cubinet-code/paperless-ngx-mcp:3.2.1
+    command: ["--http", "--port", "3000"]
+    environment:
+      PAPERLESS_URL: ${PAPERLESS_URL}
+      PAPERLESS_API_KEY: ${PAPERLESS_API_KEY}
+    ports:
+      - "127.0.0.1:9113:3000"   # no built-in auth: localhost only
+    networks: [paperless-mcp-net]
+    restart: unless-stopped
+
+networks:
+  paperless-mcp-net: {}
