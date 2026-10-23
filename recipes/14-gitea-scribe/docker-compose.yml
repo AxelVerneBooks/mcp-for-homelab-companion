@@ -1,0 +1,26 @@
+name: mcp-recipe-14
+
+# Recipe 14 — Gitea Scribe (needs backend)
+#
+# Requires: Gitea (or Forgejo with the Gitea-compatible API) at GITEA_HOST
+# and a personal access token for a DEDICATED bot user, created with
+# read-only scopes. GITEA_READONLY hides write tools as a second fence.
+# The container starts and errors loudly until .env is filled.
+
+services:
+  gitea-mcp:
+    # PINNED — official Gitea MCP server (gitea/gitea-mcp). Bump deliberately.
+    image: docker.gitea.com/gitea-mcp-server:1.6.0
+    environment:
+      GITEA_HOST: ${GITEA_HOST}
+      GITEA_ACCESS_TOKEN: ${GITEA_ACCESS_TOKEN}
+      GITEA_READONLY: "true"
+      MCP_MODE: http
+      GITEA_INSECURE: ${GITEA_INSECURE:-false}
+    ports:
+      - "9114:8080"
+    networks: [gitea-mcp-net]
+    restart: unless-stopped
+
+networks:
+  gitea-mcp-net: {}

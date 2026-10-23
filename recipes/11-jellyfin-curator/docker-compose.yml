@@ -1,0 +1,27 @@
+name: mcp-recipe-11
+
+# Recipe 11 — Jellyfin Curator (needs backend)
+#
+# Requires: Jellyfin reachable at JELLYFIN_URL, an API key, and a bearer
+# token YOU choose (MCP_HTTP_TOKEN) — the server refuses to bind a
+# non-localhost address without one. Jellyfin API keys are admin-grade, so
+# the bearer token + an isolated network are the scope (see README).
+# The container starts and errors loudly until .env is filled: that is the
+# designed failure mode (loud, early, honest).
+
+services:
+  jellyfin-mcp:
+    # PINNED — jaredtrent/jellyfin-mcp (date-versioned releases). Bump deliberately.
+    image: ghcr.io/jaredtrent/jellyfin-mcp:2026.604.2
+    environment:
+      JELLYFIN_URL: ${JELLYFIN_URL}
+      JELLYFIN_API_KEY: ${JELLYFIN_API_KEY}
+      HTTP_TOKEN: ${MCP_HTTP_TOKEN}
+      TZ: ${TZ:-UTC}
+    ports:
+      - "9111:8080"
+    networks: [jellyfin-mcp-net]
+    restart: unless-stopped
+
+networks:
+  jellyfin-mcp-net: {}
