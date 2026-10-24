@@ -4,6 +4,8 @@
 
 **This is the free, MIT-licensed companion to [_MCP for the Homelab_](https://axelverne.com)** — the ebook that teaches the why, the scoping ritual, the security model, and the error catalog behind these recipes. The recipes stand alone; the book makes you dangerous.
 
+**Browse the catalog:** [axelvernebooks.github.io/mcp-for-homelab-companion](https://axelvernebooks.github.io/mcp-for-homelab-companion/) (also as [`catalog.json`](docs/catalog.json)).
+
 One folder per recipe from the Recipe Appendix (Chapter 10 of the book). Each folder is self-contained: `cp` the env example, edit it, `docker compose up -d`, wire the stanza, ask the first question.
 
 ## Repo map
@@ -21,7 +23,12 @@ recipes/
   09-grafana-qa/           Grafana MCP                        → HTTP · needs Grafana + viewer token
   10-custom-front-desk/    full working example server        → HTTP · works OOTB (mock backend)
 tools/smoke.sh            validates all 10 configs; live-tests 01 (mount) + 10 (handshake)
+tools/build_docs.py       renders docs/ (GitHub Pages catalog) from recipes/*/recipe.json
+tools/validate_metadata.py  schema-checks recipe.json + server.json
+docs/                     generated catalog site — don't edit by hand
 ```
+
+Each recipe folder also carries a `recipe.json` (catalog metadata: status, transport, port, env vars, upstream server). Recipe 10, the one server this repo builds itself, has an [MCP Registry](https://registry.modelcontextprotocol.io) `server.json` as `io.github.AxelVerneBooks/homelab-pool-front-desk`.
 
 **Transport note:** the shelf servers you spawn *from your client* (01, 02) are stdio — no ports, no HTTP. Recipes 03–10 serve streamable HTTP from your compose stack. Every recipe's README shows the correct stanza shape for its transport (book, Chapter 3).
 
@@ -57,3 +64,7 @@ The smoke script runs two tiers: **Tier 1** validates every recipe's compose fil
 ## Versioning rule
 
 Every image tag in this repo is a placeholder of the form `vX.Y.Z`. Before cooking a recipe, pin the current release of the referenced server (the book's Chapter 5 explains why pinning is the difference between a stack and a surprise). `grep -r "vX.Y.Z" recipes/` lists everything you must pin.
+
+## Contributing
+
+Bug reports, unsafe-default reports, and recipe requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) for the safety contract every recipe follows.

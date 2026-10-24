@@ -1,0 +1,421 @@
+{
+  "name": "MCP for the Homelab — Companion Recipes",
+  "book": "https://axelverne.com",
+  "repository": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion",
+  "recipes": [
+    {
+      "id": "01-media-librarian",
+      "number": 1,
+      "title": "Read-Only Media Librarian",
+      "summary": "The reference filesystem MCP server pointed at a media tree, mounted read-only, with no network.",
+      "status": "works-ootb",
+      "transport": "stdio",
+      "chapter": "Chapter 4, Recipe 1",
+      "tags": [
+        "filesystem",
+        "media",
+        "read-only"
+      ],
+      "upstream": {
+        "description": "Reference filesystem MCP server (modelcontextprotocol/servers)",
+        "image": "mcp/filesystem:vX.Y.Z",
+        "repository": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
+      },
+      "environmentVariables": [
+        {
+          "name": "MEDIA_DIR",
+          "description": "Directory on the Docker host to expose read-only as /media.",
+          "isRequired": false,
+          "isSecret": false,
+          "placeholder": "/tank/media"
+        }
+      ],
+      "firstQuestion": "What's the largest file in my media folder and did anything land there this week?",
+      "scopeNotes": [
+        ":ro mount: the server physically cannot write.",
+        "network_mode: none: nothing to phone home to."
+      ],
+      "stanza": "{ \"mcpServers\": { \"media-librarian\": {\n    \"command\": \"docker\",\n    \"args\": [\"run\", \"--rm\", \"-i\",\n             \"--network\", \"none\",\n             \"-v\", \"${MEDIA_DIR:-/tank/media}:/media:ro\",\n             \"mcp/filesystem:vX.Y.Z\", \"/media\"] } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/01-media-librarian"
+    },
+    {
+      "id": "02-docker-forensics",
+      "number": 2,
+      "title": "Docker Forensics",
+      "summary": "docker-mcp scoped with ALLOW_LIST: the assistant sees and manages only the containers you name.",
+      "status": "works-ootb",
+      "transport": "stdio",
+      "chapter": "Chapter 4, Recipe 2",
+      "tags": [
+        "docker",
+        "containers",
+        "diagnostics"
+      ],
+      "upstream": {
+        "description": "Community docker-mcp server (pin your choice)",
+        "image": "docker-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "ALLOW_LIST",
+          "description": "Comma-separated container names the assistant may see. This is the security boundary.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "plex,radarr,sonarr"
+        }
+      ],
+      "firstQuestion": "Which containers have restarted more than once this week, and why?",
+      "scopeNotes": [
+        "The only recipe that mounts the Docker socket.",
+        "ALLOW_LIST is the boundary; unlisted containers are invisible."
+      ],
+      "stanza": "{ \"mcpServers\": { \"docker-forensics\": {\n    \"command\": \"docker\",\n    \"args\": [\"run\", \"--rm\", \"-i\",\n             \"-v\", \"/var/run/docker.sock:/var/run/docker.sock\",\n             \"--env-file\", \"<this folder>/.env\",\n             \"docker-mcp:vX.Y.Z\"] } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/02-docker-forensics"
+    },
+    {
+      "id": "03-ha-concierge",
+      "number": 3,
+      "title": "Home Assistant Concierge",
+      "summary": "Home Assistant over MCP, scoped to a dedicated houseguest-permission user.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9103,
+      "chapter": "Chapter 5, Recipe 3",
+      "tags": [
+        "home-assistant",
+        "smart-home"
+      ],
+      "upstream": {
+        "description": "Community Home Assistant MCP server (pin your choice)",
+        "image": "ha-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "HASS_URL",
+          "description": "Home Assistant base URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "http://homeassistant.local:8123"
+        },
+        {
+          "name": "HASS_TOKEN",
+          "description": "Long-lived access token for a DEDICATED, houseguest-scoped user.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "Run the movie scene and tell me what it actually changed.",
+      "scopeNotes": [
+        "Dedicated HA user; never your personal token.",
+        "Locks, alarm panels and garage doors stay off the menu."
+      ],
+      "stanza": "{ \"mcpServers\": { \"ha-concierge\": {\n    \"url\": \"http://<docker-host>:9103/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/03-ha-concierge"
+    },
+    {
+      "id": "04-proxmox-auditor",
+      "number": 4,
+      "title": "Proxmox Auditor",
+      "summary": "Proxmox VE over MCP with a PVEAuditor-role API token.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9104,
+      "chapter": "Chapter 5, Recipe 4",
+      "tags": [
+        "proxmox",
+        "virtualization",
+        "infrastructure"
+      ],
+      "upstream": {
+        "description": "Community Proxmox MCP server (pin your choice)",
+        "image": "proxmox-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "PVE_HOST",
+          "description": "Proxmox VE API URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "https://pve.local:8006"
+        },
+        {
+          "name": "PVE_TOKEN",
+          "description": "API token with the PVEAuditor role (user@realm!tokenid=secret).",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "VERIFY_TLS",
+          "description": "Verify the PVE certificate. Prefer installing your CA over disabling.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "true"
+        }
+      ],
+      "firstQuestion": "Which VMs haven't been touched in 90 days and how much RAM are they hoarding?",
+      "scopeNotes": [
+        "PVEAuditor role only for week one.",
+        "Promote write capability deliberately, with a menu-notes entry."
+      ],
+      "stanza": "{ \"mcpServers\": { \"proxmox-auditor\": {\n    \"url\": \"http://<docker-host>:9104/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/04-proxmox-auditor"
+    },
+    {
+      "id": "05-qbittorrent-manager",
+      "number": 5,
+      "title": "qBittorrent Night Manager",
+      "summary": "qBittorrent over MCP for 2 a.m. diagnostics, on qBit's network only.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9105,
+      "chapter": "Chapter 5, Recipe 5",
+      "tags": [
+        "qbittorrent",
+        "downloads",
+        "media"
+      ],
+      "upstream": {
+        "description": "Community qBittorrent MCP server (pin your choice)",
+        "image": "qbit-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "QBIT_URL",
+          "description": "qBittorrent WebUI URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "http://qbittorrent:8080"
+        },
+        {
+          "name": "QBIT_USER",
+          "description": "DEDICATED qBit account for the assistant.",
+          "isRequired": true,
+          "isSecret": false
+        },
+        {
+          "name": "QBIT_PASS",
+          "description": "Password for the dedicated account.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "Why is nothing downloading — check the queue and any stalled transfers.",
+      "scopeNotes": [
+        "Dedicated qBit account: the account is the scope.",
+        "Network-exiled to qBit's segment."
+      ],
+      "stanza": "{ \"mcpServers\": { \"qbit-manager\": {\n    \"url\": \"http://<docker-host>:9105/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/05-qbittorrent-manager"
+    },
+    {
+      "id": "06-arr-butler",
+      "number": 6,
+      "title": "Radarr Butler (the *arr pattern)",
+      "summary": "Radarr over MCP, and the template for Sonarr, Prowlarr and Lidarr.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9106,
+      "chapter": "Chapter 5, Recipe 6",
+      "tags": [
+        "radarr",
+        "sonarr",
+        "arr",
+        "media"
+      ],
+      "upstream": {
+        "description": "Community *arr MCP server (pin your choice)",
+        "image": "arr-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "ARR_URL",
+          "description": "Radarr base URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "http://radarr:7878"
+        },
+        {
+          "name": "ARR_KEY",
+          "description": "Radarr API key (Settings → General → Security).",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "What's sitting in Radarr's queue, and what's been stuck longest?",
+      "scopeNotes": [
+        "Read-only until the couch-grab day.",
+        "One server per *arr app; never share."
+      ],
+      "stanza": "{ \"mcpServers\": { \"radarr-butler\": {\n    \"url\": \"http://<docker-host>:9106/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/06-arr-butler"
+    },
+    {
+      "id": "07-pihole-detective",
+      "number": 7,
+      "title": "Pi-hole Query Detective",
+      "summary": "Pi-hole over MCP with a read-only token.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9107,
+      "chapter": "Chapter 5, Recipe 7",
+      "tags": [
+        "pihole",
+        "dns",
+        "network"
+      ],
+      "upstream": {
+        "description": "Community Pi-hole MCP server (pin a release matching your Pi-hole major version)",
+        "image": "pihole-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "PIHOLE_URL",
+          "description": "Pi-hole URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "http://pihole.local"
+        },
+        {
+          "name": "PIHOLE_TOKEN",
+          "description": "Read-only scoped token / app password.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "Which client made the most blocked queries in the last 24 hours?",
+      "scopeNotes": [
+        "Read-only token.",
+        "'Disable blocking' stays behind the approval click forever."
+      ],
+      "stanza": "{ \"mcpServers\": { \"pihole-detective\": {\n    \"url\": \"http://<docker-host>:9107/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/07-pihole-detective"
+    },
+    {
+      "id": "08-nas-warden",
+      "number": 8,
+      "title": "NAS Health Warden",
+      "summary": "TrueNAS SCALE over MCP: pool health, disk temps, dataset usage. Read-only, full stop.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9108,
+      "chapter": "Chapter 5, Recipe 8",
+      "tags": [
+        "truenas",
+        "nas",
+        "storage"
+      ],
+      "upstream": {
+        "description": "Community TrueNAS MCP server (pin your choice)",
+        "image": "truenas-mcp:vX.Y.Z"
+      },
+      "environmentVariables": [
+        {
+          "name": "TN_URL",
+          "description": "TrueNAS websocket URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "wss://truenas.local/websocket"
+        },
+        {
+          "name": "TN_KEY",
+          "description": "READ-ONLY API key for a dedicated user.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "How is the pool, and is any disk running hotter than its siblings?",
+      "scopeNotes": [
+        "Read-only API key, full stop.",
+        "Dedicated user under Credentials → Users."
+      ],
+      "stanza": "{ \"mcpServers\": { \"nas-warden\": {\n    \"url\": \"http://<docker-host>:9108/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/08-nas-warden"
+    },
+    {
+      "id": "09-grafana-qa",
+      "number": 9,
+      "title": "Grafana Question Answerer",
+      "summary": "Grafana over MCP with a Viewer-role service account: questions, not dashboards.",
+      "status": "needs-backend",
+      "transport": "streamable-http",
+      "port": 9109,
+      "chapter": "Chapter 5, Recipe 9",
+      "tags": [
+        "grafana",
+        "metrics",
+        "observability"
+      ],
+      "upstream": {
+        "description": "Grafana MCP server",
+        "image": "grafana-mcp:vX.Y.Z",
+        "registryName": "io.github.grafana/mcp-grafana",
+        "repository": "https://github.com/grafana/mcp-grafana"
+      },
+      "environmentVariables": [
+        {
+          "name": "GRAFANA_URL",
+          "description": "Grafana base URL.",
+          "isRequired": true,
+          "isSecret": false,
+          "placeholder": "http://grafana.local:3000"
+        },
+        {
+          "name": "GRAFANA_TOKEN",
+          "description": "Service-account token with the Viewer role.",
+          "isRequired": true,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "What does the last hour of CPU look like on the hypervisor, and does it correlate with anything else on that dashboard?",
+      "scopeNotes": [
+        "Viewer role only.",
+        "Dashboards for graphs; MCP for questions."
+      ],
+      "stanza": "{ \"mcpServers\": { \"grafana-qa\": {\n    \"url\": \"http://<docker-host>:9109/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/09-grafana-qa"
+    },
+    {
+      "id": "10-custom-front-desk",
+      "number": 10,
+      "title": "The Custom Front Desk",
+      "summary": "A complete FastMCP server wrapping a (mock) vendor API with two read-only tools. Read the source; it's the chapter.",
+      "status": "works-ootb",
+      "transport": "streamable-http",
+      "port": 9110,
+      "chapter": "Chapter 6, Recipe 10",
+      "tags": [
+        "fastmcp",
+        "python",
+        "custom-server",
+        "template"
+      ],
+      "upstream": {
+        "description": "Original server in this repo (server.py)",
+        "registryName": "io.github.AxelVerneBooks/homelab-pool-front-desk",
+        "serverJson": "server.json"
+      },
+      "environmentVariables": [
+        {
+          "name": "POOL_API_URL",
+          "description": "Vendor API base URL (defaults to the baked-in mock).",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "http://pool-api:8080"
+        },
+        {
+          "name": "POOL_API_KEY",
+          "description": "Vendor API key; empty for the mock.",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ],
+      "firstQuestion": "Is the pool heater on, and how does the water temp compare to the solar intake reading?",
+      "scopeNotes": [
+        "Two read-only tools; scope enforced in code.",
+        "Write tool ships commented out with a promotion checklist."
+      ],
+      "stanza": "{ \"mcpServers\": { \"pool\": {\n    \"url\": \"http://<docker-host>:9110/mcp\" } } }",
+      "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/10-custom-front-desk"
+    }
+  ]
+}

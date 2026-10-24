@@ -1,0 +1,40 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "07-pihole-detective",
+  "number": 7,
+  "title": "Pi-hole Query Detective",
+  "summary": "Pi-hole over MCP with a read-only token.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9107,
+  "chapter": "Chapter 5, Recipe 7",
+  "tags": [
+    "pihole",
+    "dns",
+    "network"
+  ],
+  "upstream": {
+    "description": "Community Pi-hole MCP server (pin a release matching your Pi-hole major version)",
+    "image": "pihole-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "PIHOLE_URL",
+      "description": "Pi-hole URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "http://pihole.local"
+    },
+    {
+      "name": "PIHOLE_TOKEN",
+      "description": "Read-only scoped token / app password.",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "Which client made the most blocked queries in the last 24 hours?",
+  "scopeNotes": [
+    "Read-only token.",
+    "'Disable blocking' stays behind the approval click forever."
+  ]
+}
