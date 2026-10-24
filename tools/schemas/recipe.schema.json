@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tools/schemas/recipe.schema.json",
+  "title": "Homelab MCP recipe",
+  "description": "Catalog metadata for one recipe folder. Drives the docs site; field names for env vars mirror the MCP Registry server.json so they can be lifted straight into one.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "number", "title", "summary", "status", "transport", "chapter", "upstream", "environmentVariables", "firstQuestion", "scopeNotes"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "id": { "type": "string", "pattern": "^[0-9]{2}-[a-z0-9-]+$" },
+    "number": { "type": "integer", "minimum": 1 },
+    "title": { "type": "string", "maxLength": 80 },
+    "summary": { "type": "string", "maxLength": 200 },
+    "status": { "enum": ["works-ootb", "needs-backend"] },
+    "transport": { "enum": ["stdio", "streamable-http"] },
+    "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+    "chapter": { "type": "string" },
+    "tags": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9*-]+$" } },
+    "upstream": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["description"],
+      "properties": {
+        "description": { "type": "string" },
+        "image": { "type": "string", "description": "Image reference used in docker-compose.yml (placeholder tags allowed)." },
+        "registryName": { "type": "string", "pattern": "^[a-zA-Z0-9.-]+/[a-zA-Z0-9._-]+$", "description": "MCP Registry name, only when the upstream is a specific published server." },
+        "repository": { "type": "string", "format": "uri" },
+        "serverJson": { "type": "string", "description": "Path (relative to the recipe folder) of a registry server.json, for servers this repo publishes." }
+      }
+    },
+    "environmentVariables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "description", "isRequired", "isSecret"],
+        "properties": {
+          "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+          "description": { "type": "string" },
+          "isRequired": { "type": "boolean" },
+          "isSecret": { "type": "boolean" },
+          "placeholder": { "type": "string" },
+          "default": { "type": "string" }
+        }
+      }
+    },
+    "firstQuestion": { "type": "string" },
+    "scopeNotes": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "09-grafana-qa",
+  "number": 9,
+  "title": "Grafana Question Answerer",
+  "summary": "Grafana over MCP with a Viewer-role service account: questions, not dashboards.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9109,
+  "chapter": "Chapter 5, Recipe 9",
+  "tags": [
+    "grafana",
+    "metrics",
+    "observability"
+  ],
+  "upstream": {
+    "description": "Grafana MCP server",
+    "image": "grafana-mcp:vX.Y.Z",
+    "registryName": "io.github.grafana/mcp-grafana",
+    "repository": "https://github.com/grafana/mcp-grafana"
+  },
+  "environmentVariables": [
+    {
+      "name": "GRAFANA_URL",
+      "description": "Grafana base URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "http://grafana.local:3000"
+    },
+    {
+      "name": "GRAFANA_TOKEN",
+      "description": "Service-account token with the Viewer role.",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "What does the last hour of CPU look like on the hypervisor, and does it correlate with anything else on that dashboard?",
+  "scopeNotes": [
+    "Viewer role only.",
+    "Dashboards for graphs; MCP for questions."
+  ]
+}

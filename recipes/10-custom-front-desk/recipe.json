@@ -1,0 +1,42 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "10-custom-front-desk",
+  "number": 10,
+  "title": "The Custom Front Desk",
+  "summary": "A complete FastMCP server wrapping a (mock) vendor API with two read-only tools. Read the source; it's the chapter.",
+  "status": "works-ootb",
+  "transport": "streamable-http",
+  "port": 9110,
+  "chapter": "Chapter 6, Recipe 10",
+  "tags": [
+    "fastmcp",
+    "python",
+    "custom-server",
+    "template"
+  ],
+  "upstream": {
+    "description": "Original server in this repo (server.py)",
+    "registryName": "io.github.AxelVerneBooks/homelab-pool-front-desk",
+    "serverJson": "server.json"
+  },
+  "environmentVariables": [
+    {
+      "name": "POOL_API_URL",
+      "description": "Vendor API base URL (defaults to the baked-in mock).",
+      "isRequired": false,
+      "isSecret": false,
+      "default": "http://pool-api:8080"
+    },
+    {
+      "name": "POOL_API_KEY",
+      "description": "Vendor API key; empty for the mock.",
+      "isRequired": false,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "Is the pool heater on, and how does the water temp compare to the solar intake reading?",
+  "scopeNotes": [
+    "Two read-only tools; scope enforced in code.",
+    "Write tool ships commented out with a promotion checklist."
+  ]
+}

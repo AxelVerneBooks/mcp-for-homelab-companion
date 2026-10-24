@@ -1,0 +1,46 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.AxelVerneBooks/homelab-pool-front-desk",
+  "title": "Homelab Pool Front Desk",
+  "description": "Read-only MCP wrap of a pool-controller API: status and sensors. Companion to MCP for the Homelab.",
+  "version": "0.1.0",
+  "websiteUrl": "https://axelvernebooks.github.io/mcp-for-homelab-companion/#recipe-10-custom-front-desk",
+  "repository": {
+    "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion",
+    "source": "github",
+    "subfolder": "recipes/10-custom-front-desk"
+  },
+  "packages": [
+    {
+      "registryType": "oci",
+      "identifier": "ghcr.io/axelvernebooks/homelab-pool-front-desk:0.1.0",
+      "transport": {
+        "type": "streamable-http",
+        "url": "http://localhost:{PORT}/mcp"
+      },
+      "environmentVariables": [
+        {
+          "name": "POOL_API_URL",
+          "description": "Base URL of the pool-controller (vendor) API.",
+          "isRequired": true,
+          "format": "string",
+          "placeholder": "https://pool-api.vendor.example.com"
+        },
+        {
+          "name": "POOL_API_KEY",
+          "description": "Bearer token for the vendor API. Leave empty for unauthenticated/mock APIs.",
+          "isRequired": false,
+          "isSecret": true,
+          "format": "string"
+        },
+        {
+          "name": "PORT",
+          "description": "Port the streamable HTTP endpoint listens on.",
+          "isRequired": false,
+          "format": "number",
+          "default": "9110"
+        }
+      ]
+    }
+  ]
+}

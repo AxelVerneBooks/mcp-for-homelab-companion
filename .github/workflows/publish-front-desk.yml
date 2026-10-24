@@ -1,0 +1,42 @@
+# Publishes recipe 10's image to GHCR and its server.json to the MCP Registry.
+# Trigger: push a tag `front-desk-v<version>` matching "version" in server.json
+# (bump the image tag in "packages[0].identifier" too).
+name: publish-front-desk
+
+on:
+  push:
+    tags: ["front-desk-v*"]
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write   # GitHub OIDC login for the MCP Registry
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: recipes/10-custom-front-desk
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check tag matches server.json
+        run: |
+          want="$(jq -r .version server.json)"
+          [ "${GITHUB_REF_NAME#front-desk-v}" = "$want" ] || { echo "tag $GITHUB_REF_NAME != server.json $want"; exit 1; }
+          jq -r '.packages[0].identifier' server.json | grep -q ":$want$" || { echo "image tag in server.json != $want"; exit 1; }
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        run: |
+          image="$(jq -r '.packages[0].identifier' server.json)"
+          docker build -t "$image" .
+          docker push "$image"
+      - name: Publish to MCP Registry
+        run: |
+          curl -fsSL "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_linux_amd64.tar.gz" | tar xz mcp-publisher
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
