@@ -6,13 +6,29 @@ name: mcp-recipe-07
 # Note: Pi-hole v6 changed auth (session app-password); pin a server
 # release matching your Pi-hole major version (book, Chapter 5).
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   pihole-mcp:
+    <<: *hardening
     # PLACEHOLDER TAG — pin the current release of the community pihole-mcp
     image: pihole-mcp:vX.Y.Z
     environment:
       PIHOLE_URL: ${PIHOLE_URL}
       PIHOLE_TOKEN: ${PIHOLE_TOKEN}
     ports:
-      - "9107:9107"
+      # Loopback by default. To reach it from another machine, set
+      # MCP_BIND_ADDR in .env to this host's LAN IP (never 0.0.0.0 on a
+      # host with a public interface) — SECURITY.md, "Ports".
+      - "${MCP_BIND_ADDR:-127.0.0.1}:9107:9107"
     restart: unless-stopped

@@ -53,6 +53,10 @@ The smoke script runs two tiers: **Tier 1** validates every recipe's compose fil
 - Filesystem mounts are `:ro`; network-exiled where possible (`network_mode: none` or isolated compose networks).
 - Secrets only ever come from `.env` files (gitignored); the examples contain no credentials, only placeholders.
 - The Docker socket recipe mounts it **only** for recipe 02, with `ALLOW_LIST` set — treat any other recipe demanding the socket as a bug (report it, don't run it).
+- Every container runs as a non-root user with a read-only root filesystem, all capabilities dropped, `no-new-privileges`, and memory/CPU/PID limits.
+- Published ports bind to `127.0.0.1` unless you opt in with `MCP_BIND_ADDR`.
+
+The full conventions every recipe follows — and how to report a vulnerability — live in [SECURITY.md](SECURITY.md).
 
 ## Versioning rule
 

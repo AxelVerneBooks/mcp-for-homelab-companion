@@ -11,8 +11,21 @@ name: mcp-recipe-01
 # The demo media tree (./demo-media) lets you test the mount OOTB.
 # For real use set MEDIA_DIR in .env and use the second volume line.
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   media-mcp:
+    <<: *hardening
     # PLACEHOLDER TAG — pin the current release of the reference filesystem server
     image: mcp/filesystem:vX.Y.Z
     # Allowed directories are passed as CLI args (the container-side path).
@@ -28,10 +41,10 @@ services:
   # Validation helper only — checks the mount is readable and exits 0.
   # Run: docker compose run --rm mount-check
   mount-check:
-    image: library/alpine:3.20
+    <<: *hardening
+    image: library/alpine:3.20.3
     profiles: ["tools"]
     volumes:
       - ./demo-media:/media:ro
     command: ["sh", "-c", "test -d /media && echo 'mount OK (read-only)' && ls -A /media | head"]
-    read_only: true
     network_mode: none

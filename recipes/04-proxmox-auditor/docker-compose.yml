@@ -6,8 +6,21 @@ name: mcp-recipe-04
 # the PVEAuditor role (book, Chapter 5). Starts and errors loudly until
 # .env is filled.
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   pve-mcp:
+    <<: *hardening
     # PLACEHOLDER TAG — pin the current release of the community proxmox-mcp
     image: proxmox-mcp:vX.Y.Z
     environment:
@@ -15,5 +28,8 @@ services:
       PVE_TOKEN: ${PVE_TOKEN}   # format: user@realm!tokenid=uuid-secret
       VERIFY_TLS: ${VERIFY_TLS:-true}
     ports:
-      - "9104:9104"
+      # Loopback by default. To reach it from another machine, set
+      # MCP_BIND_ADDR in .env to this host's LAN IP (never 0.0.0.0 on a
+      # host with a public interface) — SECURITY.md, "Ports".
+      - "${MCP_BIND_ADDR:-127.0.0.1}:9104:9104"
     restart: unless-stopped
