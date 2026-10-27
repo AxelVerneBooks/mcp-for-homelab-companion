@@ -19,6 +19,9 @@ docker compose config -q             # validates the file itself
     "command": "docker",
     "args": ["run", "--rm", "-i",
              "--network", "none",
+             "--user", "65534:65534", "--read-only", "--tmpfs", "/tmp",
+             "--cap-drop", "ALL", "--security-opt", "no-new-privileges:true",
+             "--memory", "256m", "--cpus", "0.5", "--pids-limit", "128",
              "-v", "${MEDIA_DIR:-/tank/media}:/media:ro",
              "mcp/filesystem:vX.Y.Z", "/media"] } } }
 ```
@@ -31,4 +34,5 @@ docker compose config -q             # validates the file itself
 
 - `:ro` mount — the server physically cannot write.
 - `network_mode: none` — nothing to phone home about, so it can't.
+- Runs as `nobody` with a read-only rootfs, no capabilities, and memory/CPU/PID caps ([SECURITY.md](../../SECURITY.md)). If your media isn't world-readable, swap `65534:65534` for a read-only media user's UID:GID — never root.
 - `MEDIA_DIR` must be a directory you'd hand a stranger with a clipboard; that's the threat model.

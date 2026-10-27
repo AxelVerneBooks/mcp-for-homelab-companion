@@ -9,14 +9,30 @@ name: mcp-recipe-02
 # Chapter 7 Rule 3: this is the only recipe in the repo that touches the
 # Docker socket. Anything else asking for it is a bug.
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   socket-check:
+    <<: *hardening
     # Validation service: proves the socket is visible and the env parses.
     # Run: docker compose run --rm socket-check
-    image: library/alpine:3.20
+    # `test -S` only stats the socket, so this runs fine as nobody — it never
+    # talks to the Docker API. NOTE: `:ro` on a socket does NOT make the API
+    # read-only; ALLOW_LIST in the real server is the boundary (SECURITY.md).
+    image: library/alpine:3.20.3
     environment:
       ALLOW_LIST: ${ALLOW_LIST}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     command: ["sh", "-c", "test -S /var/run/docker.sock && echo 'socket visible (read-only check)' && echo \"ALLOW_LIST=$${ALLOW_LIST}\""]
-    read_only: true
+    network_mode: none

@@ -6,8 +6,21 @@ name: mcp-recipe-05
 # assistant (qBit's permission model is coarse — the account is the scope).
 # The server shares a network with qBit and nothing else (book, Ch. 5).
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   qbit-mcp:
+    <<: *hardening
     # PLACEHOLDER TAG — pin the current release of the community qbit-mcp
     image: qbit-mcp:vX.Y.Z
     environment:
@@ -15,7 +28,10 @@ services:
       QBIT_USER: ${QBIT_USER}
       QBIT_PASS: ${QBIT_PASS}
     ports:
-      - "9105:9105"
+      # Loopback by default. To reach it from another machine, set
+      # MCP_BIND_ADDR in .env to this host's LAN IP (never 0.0.0.0 on a
+      # host with a public interface) — SECURITY.md, "Ports".
+      - "${MCP_BIND_ADDR:-127.0.0.1}:9105:9105"
     networks: [qbit-net]
     restart: unless-stopped
 

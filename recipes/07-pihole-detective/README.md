@@ -18,6 +18,8 @@ docker compose up -d
     "url": "http://<docker-host>:9107/mcp" } } }
 ```
 
+The port binds to **loopback only** by default, so `<docker-host>` is `localhost`. If your client runs on another machine, set `MCP_BIND_ADDR` in `.env` to this host's LAN IP and use that — see [SECURITY.md](../../SECURITY.md#ports).
+
 ## First question
 
 *"Which client made the most blocked queries in the last 24 hours?"*

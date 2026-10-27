@@ -12,13 +12,28 @@ name: mcp-recipe-10
 # Point it at the real vendor API later by setting POOL_API_URL +
 # POOL_API_KEY in .env and removing the pool-api service.
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   pool-api:
+    <<: *hardening
     build:
       dockerfile: mock-api.Dockerfile
+    # No `ports:` on purpose — only pool-mcp can reach it, over pool-net.
     networks: [pool-net]
 
   pool-mcp:
+    <<: *hardening
     build:
       dockerfile: Dockerfile
     environment:
@@ -26,7 +41,10 @@ services:
       POOL_API_KEY: ${POOL_API_KEY:-}     # real key lives in .env, never here
       PORT: "9110"
     ports:
-      - "9110:9110"
+      # Loopback by default. To reach it from another machine, set
+      # MCP_BIND_ADDR in .env to this host's LAN IP (never 0.0.0.0 on a
+      # host with a public interface) — SECURITY.md, "Ports".
+      - "${MCP_BIND_ADDR:-127.0.0.1}:9110:9110"
     networks: [pool-net]
     depends_on: [pool-api]
     restart: unless-stopped

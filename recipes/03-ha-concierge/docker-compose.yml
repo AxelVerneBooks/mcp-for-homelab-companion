@@ -7,15 +7,31 @@ name: mcp-recipe-03
 # The container starts and errors loudly until .env is filled: that is the
 # designed failure mode (loud, early, honest).
 
+# Hardening baseline (SECURITY.md): non-root, read-only rootfs, no
+# capabilities, no privilege escalation, bounded memory/CPU/PIDs.
+x-hardening: &hardening
+  user: "${PUID:-65534}:${PGID:-65534}"
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  mem_limit: 256m
+  cpus: 0.50
+  pids_limit: 128
+
 services:
   ha-mcp:
+    <<: *hardening
     # PLACEHOLDER TAG — pin the current release of the community HA MCP server
     image: ha-mcp:vX.Y.Z
     environment:
       HASS_URL: ${HASS_URL}
       HASS_TOKEN: ${HASS_TOKEN}
     ports:
-      - "9103:9103"
+      # Loopback by default. To reach it from another machine, set
+      # MCP_BIND_ADDR in .env to this host's LAN IP (never 0.0.0.0 on a
+      # host with a public interface) — SECURITY.md, "Ports".
+      - "${MCP_BIND_ADDR:-127.0.0.1}:9103:9103"
     networks: [ha-mcp-net]
     restart: unless-stopped
 
