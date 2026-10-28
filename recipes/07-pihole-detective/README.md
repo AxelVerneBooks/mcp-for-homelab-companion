@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (Pi-hole + token) · **Book ref:** Chapter 5 (network hands), Recipe 7
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): network hands and why the disable-blocking tool always stays behind approval. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The Pi-hole MCP server. Answers *"which client made the most blocked queries in the last 24 hours?"* — half of the Chapter 2 "why is the Wi-Fi weird" investigation.
 
 ## Run

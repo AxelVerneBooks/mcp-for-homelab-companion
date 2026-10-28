@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (Radarr + API key) · **Book ref:** Chapter 5 (library hands), Recipe 6
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): library hands and the one-server-per-*arr-app pattern. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 Radarr via MCP — and the **pattern for the whole *arr family**: Sonarr, Prowlarr, Lidarr are the same compose file with a different image, port, and API key.
 
 ## Run

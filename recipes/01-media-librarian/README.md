@@ -2,6 +2,8 @@
 
 **Status:** ✅ Works OOTB · **Book ref:** Chapter 4 (filesystem), Recipe 1
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 4](https://axelverne.com): how filesystem servers work, and why read-only and no network are the defaults. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The reference filesystem MCP server, pointed at a media tree, mounted **read-only**, with **no network**. The canonical "hello hands" of MCP.
 
 ## Run

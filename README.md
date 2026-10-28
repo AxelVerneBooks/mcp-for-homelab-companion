@@ -6,6 +6,23 @@
 
 One folder per recipe from the Recipe Appendix (Chapter 10 of the book). Each folder is self-contained: `cp` the env example, edit it, `docker compose up -d`, wire the stanza, ask the first question.
 
+## Recipe comparison
+
+| # | Recipe | Use case | What it needs | Transport · port | Difficulty | Book chapter |
+|---|--------|----------|---------------|------------------|------------|--------------|
+| 01 | [Media Librarian](recipes/01-media-librarian/) | Ask questions about a media tree (sizes, new arrivals) | Nothing; demo tree included. Optional: a host directory, mounted `:ro` | stdio · none (`network_mode: none`) | 🟢 Easy | [Ch. 4](https://axelverne.com) |
+| 02 | [Docker Forensics](recipes/02-docker-forensics/) | Restart loops, container health, logs for named containers | Local Docker socket, plus an `ALLOW_LIST` of container names | stdio · none | 🟢 Easy to run · ⚠️ socket is root-equivalent | [Ch. 4](https://axelverne.com) (+ Ch. 7 Rule 3) |
+| 03 | [HA Concierge](recipes/03-ha-concierge/) | Run scenes and control lights/devices in plain language | Home Assistant, plus a long-lived token from a **dedicated** houseguest-scoped user | HTTP · 9103 | 🟡 Medium (user scoping) | [Ch. 5](https://axelverne.com) |
+| 04 | [Proxmox Auditor](recipes/04-proxmox-auditor/) | Find idle VMs and audit RAM/resource use | Proxmox VE node, plus a PVEAuditor-role API token; TLS trust for self-signed certs | HTTP · 9104 | 🟡 Medium (token + TLS) | [Ch. 5](https://axelverne.com) |
+| 05 | [qBittorrent Manager](recipes/05-qbittorrent-manager/) | Diagnose stalled downloads and queue problems | qBittorrent WebUI, a dedicated account, and qBit's existing Docker network (`external`) | HTTP · 9105 | 🟡 Medium (shared network) | [Ch. 5](https://axelverne.com) |
+| 06 | [*arr Butler](recipes/06-arr-butler/) | Radarr queue and library questions (pattern for Sonarr/Prowlarr/Lidarr) | Radarr, plus its API key | HTTP · 9106 | 🟢 Easy | [Ch. 5](https://axelverne.com) |
+| 07 | [Pi-hole Detective](recipes/07-pihole-detective/) | Blocked-query and per-client DNS investigation | Pi-hole (v6 auth model), plus a read-only token | HTTP · 9107 | 🟡 Medium (v6 auth / version pin) | [Ch. 5](https://axelverne.com) |
+| 08 | [NAS Warden](recipes/08-nas-warden/) | Pool health, disk temps, dataset usage | TrueNAS SCALE, plus a read-only API key; websocket (`wss://`) reachability | HTTP · 9108 | 🟠 Medium–hard (websocket through proxies) | [Ch. 5](https://axelverne.com) |
+| 09 | [Grafana Q&A](recipes/09-grafana-qa/) | Ask questions of dashboards and correlate metrics | Grafana, plus a Viewer-role service-account token | HTTP · 9109 | 🟢 Easy | [Ch. 5](https://axelverne.com) |
+| 10 | [Custom Front Desk](recipes/10-custom-front-desk/) | Template for wrapping any API as your own MCP server | Nothing; mock backend included. Builds two `python:3.12-slim` images locally | HTTP · 9110 | 🟢 Easy to run · 🔴 Advanced to adapt | [Ch. 6](https://axelverne.com) |
+
+**Footprint:** every recipe is a single MCP server container (recipe 10 adds one mock-API container, and 01/02 add a throwaway alpine check). None needs a GPU or persistent storage. Recipes 01 and 02 open no ports. Recipes 03–10 each claim one host port, listed above. All recipes are written up together in the Recipe Appendix (Chapter 10).
+
 ## Repo map
 
 ```

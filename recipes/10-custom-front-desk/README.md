@@ -2,6 +2,8 @@
 
 **Status:** ✅ Works OOTB (mock backend baked in) · **Book ref:** Chapter 6, Recipe 10
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 6](https://axelverne.com): a line-by-line walkthrough of wrapping your own service, including the write-tool promotion checklist. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The only recipe that ships its own backend: a **mock pool-controller API** stands in for the vendor's cloud service, so you can run, query, and *read the source* of a complete MCP wrap before aiming it at anything real.
 
 ## Run

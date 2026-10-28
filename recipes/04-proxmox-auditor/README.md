@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (PVE + API token) · **Book ref:** Chapter 5 (infrastructure hands), Recipe 4
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): infrastructure hands, the PVEAuditor-first rule, and the write-promotion ceremony. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The Proxmox MCP server, scoped to an **auditor-role API token**. Answers "which VMs haven't been touched in 90 days and how much RAM are they hoarding?" without opening the PVE UI.
 
 ## Run
