@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (qBit + account) · **Book ref:** Chapter 5 (library hands), Recipe 5
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): library hands, the dedicated-account scope, and the same-host rule. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The qBittorrent MCP server. The killer tool isn't adding torrents — it's 2 a.m. diagnostics: *"why is nothing downloading."*
 
 ## Run

@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (HA + token) · **Book ref:** Chapter 5 (environment hands), Recipe 3
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): environment hands and scoping a dedicated Home Assistant user. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The Home Assistant MCP server — the one that converts skeptics, because the first demo is *"dim the office lights and start the movie scene"* typed from the couch.
 
 ## Run

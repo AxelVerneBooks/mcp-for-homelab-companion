@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (TrueNAS + API key) · **Book ref:** Chapter 5 (infrastructure hands), Recipe 8
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): infrastructure hands and why storage servers get read-only keys, full stop. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The TrueNAS SCALE MCP server — pool health, disk temps, dataset usage. Read-only, full stop.
 
 ## Run

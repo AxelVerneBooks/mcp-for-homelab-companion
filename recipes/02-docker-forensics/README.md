@@ -2,6 +2,8 @@
 
 **Status:** ✅ Works OOTB (socket is local) · **Book ref:** Chapter 4 (Docker), Recipe 2
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 4](https://axelverne.com): the Docker server and allowlist scoping; Chapter 7 (Rule 3) covers why the socket is root with a different hat. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The docker-mcp server scoped with `ALLOW_LIST` — the assistant can see and manage *only* the containers you name. This is the recipe that turns "list my containers" into a one-sentence question.
 
 ## Run

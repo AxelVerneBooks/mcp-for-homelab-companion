@@ -2,6 +2,8 @@
 
 **Status:** ⚠️ Needs backend (Grafana + viewer token) · **Book ref:** Chapter 5 (Recipe 9)
 
+📖 **Read the chapter:** [_MCP for the Homelab_, Chapter 5](https://axelverne.com): the metrics reader and the Viewer-role default; Chapter 8 covers dashboards as the archive. All ten recipes are also in the Recipe Appendix (Chapter 10).
+
 The Grafana MCP server — lets the assistant read dashboards and answer *"what does the last hour of CPU look like, and does it correlate with anything else on that dashboard?"* The correlation question is where it shines.
 
 ## Run
