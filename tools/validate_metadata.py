@@ -54,6 +54,24 @@ for d in dirs:
         for err in jsonschema.Draft7Validator(server_schema).iter_errors(server):
             errors.append(f"{rel}/server.json: {err.json_path}: {err.message}")
 
+# Docs pages: relative links must resolve; every recipe README and the
+# catalog page must link back to the book.
+BOOK_URL = "https://axelverne.com"
+md_files = [ROOT / "README.md", ROOT / "CONTRIBUTING.md", *sorted((ROOT / "recipes").glob("*/README.md"))]
+for md in md_files:
+    rel = md.relative_to(ROOT)
+    text = md.read_text()
+    for target in re.findall(r"\]\(([^)\s]+)\)", text):
+        if re.match(r"[a-z]+:|#", target):
+            continue
+        if not (md.parent / target.split("#")[0]).exists():
+            errors.append(f"{rel}: broken link to {target}")
+    if md.parent.parent == ROOT / "recipes" and BOOK_URL not in text:
+        errors.append(f"{rel}: no link to {BOOK_URL}")
+index = ROOT / "docs" / "index.html"
+if index.is_file() and f'href="{BOOK_URL}"' not in index.read_text():
+    errors.append(f"docs/index.html: no link to {BOOK_URL}")
+
 if errors:
     print("\n".join(errors), file=sys.stderr)
     sys.exit(1)

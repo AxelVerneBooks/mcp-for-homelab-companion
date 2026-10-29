@@ -27,3 +27,7 @@ docker compose up -d
 - **Read-only token.** "Disable blocking for 5 minutes" is the tool that tempts everyone; it stays behind the approval click forever (book, Ch. 5).
 - Pi-hole v6 changed the auth model (app-password/session vs. the old CLI token) — pin a server release matching your Pi-hole major version.
 - The best pairing is recipes 07 + the router recipe: query logs + client state = the full "did the network change" answer.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 5, Recipe 7. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

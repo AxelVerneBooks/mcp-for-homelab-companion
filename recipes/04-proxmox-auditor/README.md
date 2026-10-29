@@ -28,3 +28,7 @@ docker compose up -d
 - Create the token under Datacenter → Permissions → API Tokens, for a dedicated user, no privilege separation unless you know you want it.
 - Promote write capability deliberately, with a note in your menu-notes file — the Chapter 5 ceremony.
 - PVE uses self-signed certs by default; if the server supports a `VERIFY_TLS=false` escape hatch, prefer installing your CA over disabling verification.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 5, Recipe 4. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

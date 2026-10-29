@@ -27,3 +27,7 @@ docker compose up -d
 - **Read-only API key, full stop.** Storage servers are where a fat-fingered "cleanup" tool earns a chapter in a different book (book, Ch. 5).
 - Create the key under Credentials → Users (API Keys) for a dedicated user.
 - The websocket URL (`wss://`) is the usual failure point — make sure your reverse proxy passes websocket upgrades if you front TrueNAS.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 5, Recipe 8. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

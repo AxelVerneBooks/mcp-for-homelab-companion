@@ -37,6 +37,9 @@ TRANSPORT_LABEL = {"stdio": "stdio", "streamable-http": "Streamable HTTP"}
 
 
 def load_recipes():
+    missing = [d.name for d in sorted(RECIPES.iterdir()) if d.is_dir() and not (d / "recipe.json").is_file()]
+    if missing:
+        sys.exit(f"recipes missing recipe.json (would be absent from the catalog): {', '.join(missing)}")
     out = []
     for path in sorted(RECIPES.glob("*/recipe.json")):
         r = json.loads(path.read_text())
@@ -73,7 +76,7 @@ def card(r):
     if up.get("registryName"):
         upstream += f' · registry: <code>{e(up["registryName"])}</code>'
     if up.get("serverJson"):
-        upstream += f' · <a href="{folder}/{e(up["serverJson"])}">server.json</a>'
+        upstream += f' · <a href="{REPO_URL}/blob/main/recipes/{e(r["id"])}/{e(up["serverJson"])}">server.json</a>'
     env_rows = "".join(
         f"<tr><td><code>{e(v['name'])}</code></td>"
         f"<td>{'required' if v['isRequired'] else 'optional'}{' · secret' if v['isSecret'] else ''}</td>"
@@ -93,7 +96,7 @@ def card(r):
   <p class="q">“{e(r['firstQuestion'])}”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: {upstream}<br>Book: {e(r['chapter'])}</p>
+    <p class="meta">Upstream: {upstream}<br>Book: <a href="{BOOK_URL}"><em>MCP for the Homelab</em></a>, {e(r['chapter'])}</p>
     <pre><code>{e(r['stanza'])}</code></pre>
     {f'<table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody>{env_rows}</tbody></table>' if env_rows else ''}
     <ul class="scope">{scope}</ul>
