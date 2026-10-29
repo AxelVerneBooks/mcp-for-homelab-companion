@@ -87,7 +87,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“What&#x27;s the largest file in my media folder and did anything land there this week?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: <a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">Reference filesystem MCP server (modelcontextprotocol/servers)</a><br>Book: Chapter 4, Recipe 1</p>
+    <p class="meta">Upstream: <a href="https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem">Reference filesystem MCP server (modelcontextprotocol/servers)</a><br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 4, Recipe 1</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;media-librarian&quot;: {
     &quot;command&quot;: &quot;docker&quot;,
     &quot;args&quot;: [&quot;run&quot;, &quot;--rm&quot;, &quot;-i&quot;,
@@ -109,7 +109,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Which containers have restarted more than once this week, and why?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community docker-mcp server (pin your choice)<br>Book: Chapter 4, Recipe 2</p>
+    <p class="meta">Upstream: Community docker-mcp server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 4, Recipe 2</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;docker-forensics&quot;: {
     &quot;command&quot;: &quot;docker&quot;,
     &quot;args&quot;: [&quot;run&quot;, &quot;--rm&quot;, &quot;-i&quot;,
@@ -131,7 +131,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Run the movie scene and tell me what it actually changed.”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community Home Assistant MCP server (pin your choice)<br>Book: Chapter 5, Recipe 3</p>
+    <p class="meta">Upstream: Community Home Assistant MCP server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 3</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;ha-concierge&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9103/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>HASS_URL</code></td><td>required</td><td>Home Assistant base URL.</td></tr><tr><td><code>HASS_TOKEN</code></td><td>required · secret</td><td>Long-lived access token for a DEDICATED, houseguest-scoped user.</td></tr></tbody></table>
@@ -149,7 +149,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Which VMs haven&#x27;t been touched in 90 days and how much RAM are they hoarding?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community Proxmox MCP server (pin your choice)<br>Book: Chapter 5, Recipe 4</p>
+    <p class="meta">Upstream: Community Proxmox MCP server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 4</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;proxmox-auditor&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9104/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>PVE_HOST</code></td><td>required</td><td>Proxmox VE API URL.</td></tr><tr><td><code>PVE_TOKEN</code></td><td>required · secret</td><td>API token with the PVEAuditor role (user@realm!tokenid=secret).</td></tr><tr><td><code>VERIFY_TLS</code></td><td>optional</td><td>Verify the PVE certificate. Prefer installing your CA over disabling.</td></tr></tbody></table>
@@ -167,7 +167,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Why is nothing downloading — check the queue and any stalled transfers.”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community qBittorrent MCP server (pin your choice)<br>Book: Chapter 5, Recipe 5</p>
+    <p class="meta">Upstream: Community qBittorrent MCP server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 5</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;qbit-manager&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9105/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>QBIT_URL</code></td><td>required</td><td>qBittorrent WebUI URL.</td></tr><tr><td><code>QBIT_USER</code></td><td>required</td><td>DEDICATED qBit account for the assistant.</td></tr><tr><td><code>QBIT_PASS</code></td><td>required · secret</td><td>Password for the dedicated account.</td></tr></tbody></table>
@@ -185,7 +185,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“What&#x27;s sitting in Radarr&#x27;s queue, and what&#x27;s been stuck longest?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community *arr MCP server (pin your choice)<br>Book: Chapter 5, Recipe 6</p>
+    <p class="meta">Upstream: Community *arr MCP server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 6</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;radarr-butler&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9106/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>ARR_URL</code></td><td>required</td><td>Radarr base URL.</td></tr><tr><td><code>ARR_KEY</code></td><td>required · secret</td><td>Radarr API key (Settings → General → Security).</td></tr></tbody></table>
@@ -203,7 +203,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Which client made the most blocked queries in the last 24 hours?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community Pi-hole MCP server (pin a release matching your Pi-hole major version)<br>Book: Chapter 5, Recipe 7</p>
+    <p class="meta">Upstream: Community Pi-hole MCP server (pin a release matching your Pi-hole major version)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 7</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;pihole-detective&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9107/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>PIHOLE_URL</code></td><td>required</td><td>Pi-hole URL.</td></tr><tr><td><code>PIHOLE_TOKEN</code></td><td>required · secret</td><td>Read-only scoped token / app password.</td></tr></tbody></table>
@@ -221,7 +221,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“How is the pool, and is any disk running hotter than its siblings?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Community TrueNAS MCP server (pin your choice)<br>Book: Chapter 5, Recipe 8</p>
+    <p class="meta">Upstream: Community TrueNAS MCP server (pin your choice)<br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 8</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;nas-warden&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9108/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>TN_URL</code></td><td>required</td><td>TrueNAS websocket URL.</td></tr><tr><td><code>TN_KEY</code></td><td>required · secret</td><td>READ-ONLY API key for a dedicated user.</td></tr></tbody></table>
@@ -239,7 +239,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“What does the last hour of CPU look like on the hypervisor, and does it correlate with anything else on that dashboard?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: <a href="https://github.com/grafana/mcp-grafana">Grafana MCP server</a> · registry: <code>io.github.grafana/mcp-grafana</code><br>Book: Chapter 5, Recipe 9</p>
+    <p class="meta">Upstream: <a href="https://github.com/grafana/mcp-grafana">Grafana MCP server</a> · registry: <code>io.github.grafana/mcp-grafana</code><br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 9</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;grafana-qa&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9109/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>GRAFANA_URL</code></td><td>required</td><td>Grafana base URL.</td></tr><tr><td><code>GRAFANA_TOKEN</code></td><td>required · secret</td><td>Service-account token with the Viewer role.</td></tr></tbody></table>
@@ -257,7 +257,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
   <p class="q">“Is the pool heater on, and how does the water temp compare to the solar intake reading?”</p>
   <details>
     <summary>Stanza, env, scope</summary>
-    <p class="meta">Upstream: Original server in this repo (server.py) · registry: <code>io.github.AxelVerneBooks/homelab-pool-front-desk</code> · <a href="https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/10-custom-front-desk/server.json">server.json</a><br>Book: Chapter 6, Recipe 10</p>
+    <p class="meta">Upstream: Original server in this repo (server.py) · registry: <code>io.github.AxelVerneBooks/homelab-pool-front-desk</code> · <a href="https://github.com/AxelVerneBooks/mcp-for-homelab-companion/blob/main/recipes/10-custom-front-desk/server.json">server.json</a><br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 6, Recipe 10</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;pool&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9110/mcp&quot; } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>POOL_API_URL</code></td><td>optional</td><td>Vendor API base URL (defaults to the baked-in mock).</td></tr><tr><td><code>POOL_API_KEY</code></td><td>optional · secret</td><td>Vendor API key; empty for the mock.</td></tr></tbody></table>

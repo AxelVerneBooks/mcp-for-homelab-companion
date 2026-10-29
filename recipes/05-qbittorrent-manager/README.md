@@ -27,3 +27,7 @@ docker compose up -d
 - **Dedicated qBit account**, never yours — qBit's permission model is coarse, so the account is the scope (book, Ch. 5).
 - The server runs on the **same host/network as qBit** and is network-exiled from everything else (`qbit-net` only).
 - Same-host rule from the book: credentials for qBit should never leave the segment qBit lives on.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 5, Recipe 5. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

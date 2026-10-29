@@ -35,3 +35,7 @@ curl -s http://localhost:9110/mcp -X POST \
 2. `cp .env.example .env`, set `POOL_API_URL` and `POOL_API_KEY` to the vendor's.
 3. Rebuild, re-run the curl above, and wire the stanza.
 4. Week of clean reads → uncomment `set_pump_mode` per the checklist in the source.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 6, Recipe 10. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

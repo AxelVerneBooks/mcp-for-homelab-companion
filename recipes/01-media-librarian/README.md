@@ -32,3 +32,7 @@ docker compose config -q             # validates the file itself
 - `:ro` mount — the server physically cannot write.
 - `network_mode: none` — nothing to phone home about, so it can't.
 - `MEDIA_DIR` must be a directory you'd hand a stranger with a clipboard; that's the threat model.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 4, Recipe 1. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

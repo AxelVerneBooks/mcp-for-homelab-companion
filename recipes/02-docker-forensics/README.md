@@ -31,3 +31,7 @@ docker compose run --rm socket-check  # validates socket visibility + env shape
 - **The socket is root with a different hat** (book, Ch. 7 Rule 3). This is the *only* recipe in the repo that mounts it.
 - `ALLOW_LIST` is the security boundary, not a suggestion. A container not in the list is invisible to the assistant — that's the design.
 - Run this server on the host whose containers you're exposing; the socket path is host-local.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 4, Recipe 2. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).
