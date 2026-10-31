@@ -10,26 +10,40 @@ name: mcp-recipe-10
 #   pool-mcp  → your front desk: two read-only tools over MCP on :9110
 #
 # Point it at the real vendor API later by setting POOL_API_URL +
-# POOL_API_KEY in .env and removing the pool-api service.
+# POOL_API_KEY in .env and removing the pool-api service (and the
+# depends_on block that waits for it).
 
 services:
   pool-api:
     build:
       dockerfile: mock-api.Dockerfile
     networks: [pool-net]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/status', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
   pool-mcp:
     build:
       dockerfile: Dockerfile
     environment:
-      POOL_API_URL: http://pool-api:8080
+      POOL_API_URL: ${POOL_API_URL:-http://pool-api:8080}   # .env overrides; default = the mock
       POOL_API_KEY: ${POOL_API_KEY:-}     # real key lives in .env, never here
       PORT: "9110"
     ports:
       - "9110:9110"
     networks: [pool-net]
-    depends_on: [pool-api]
+    depends_on:
+      pool-api:
+        condition: service_healthy
     restart: unless-stopped
+    # Healthy = uvicorn is accepting connections on the MCP port.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.create_connection(('127.0.0.1', 9110), 3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
 
 networks:
   pool-net: {}

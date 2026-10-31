@@ -20,7 +20,7 @@ docker compose config -q             # validates the file itself
     "args": ["run", "--rm", "-i",
              "--network", "none",
              "-v", "${MEDIA_DIR:-/tank/media}:/media:ro",
-             "mcp/filesystem:vX.Y.Z", "/media"] } } }
+             "mcp/filesystem:1.0.2", "/media"] } } }
 ```
 
 ## First question

@@ -13,8 +13,9 @@ name: mcp-recipe-01
 
 services:
   media-mcp:
-    # PLACEHOLDER TAG — pin the current release of the reference filesystem server
-    image: mcp/filesystem:vX.Y.Z
+    # Pinned to a tested release of the reference filesystem server. Bump it
+    # deliberately (book, Chapter 5) — CI re-tests the recipe on every change.
+    image: mcp/filesystem:1.0.2
     # Allowed directories are passed as CLI args (the container-side path).
     command: ["/media"]
     volumes:
