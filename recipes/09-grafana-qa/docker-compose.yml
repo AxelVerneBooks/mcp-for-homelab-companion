@@ -8,11 +8,22 @@ name: mcp-recipe-09
 
 services:
   grafana-mcp:
-    # PLACEHOLDER TAG — pin the current release of the grafana MCP server
-    image: grafana-mcp:vX.Y.Z
+    # Grafana's own MCP server, pinned to a tested release. Bump it
+    # deliberately (book, Chapter 5) — CI re-tests the recipe on every change.
+    image: grafana/mcp-grafana:2.1.1
+    # The image defaults to SSE on :8000; this recipe serves streamable HTTP
+    # on :9109/mcp, with write tools unregistered (belt + Viewer braces).
+    command:
+      - --transport=streamable-http
+      - --address=0.0.0.0:9109
+      - --disable-write
+      # Host-header allowlist: add the name/IP your client uses to reach
+      # this box (e.g. nas.lan:9109), comma-separated, in .env.
+      - --allowed-hosts=${MCP_ALLOWED_HOSTS:-localhost:9109,127.0.0.1:9109}
     environment:
       GRAFANA_URL: ${GRAFANA_URL}
-      GRAFANA_TOKEN: ${GRAFANA_TOKEN}
+      GRAFANA_SERVICE_ACCOUNT_TOKEN: ${GRAFANA_TOKEN}
+      GRAFANA_USAGE_STATS: disabled
     ports:
       - "9109:9109"
     restart: unless-stopped

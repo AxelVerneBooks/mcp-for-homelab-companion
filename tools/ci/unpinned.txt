@@ -1,0 +1,18 @@
+# Recipes whose MCP server image is still the `vX.Y.Z` placeholder, so there
+# is nothing real for CI to pull and spin up yet (see "Versioning rule" in
+# the top-level README).
+#
+# recipe-up.sh treats this list strictly, both ways:
+#   - a recipe with a placeholder image that is NOT listed here → CI fails
+#   - a recipe listed here whose image IS pinned now           → CI fails
+#     (delete the line so the recipe gets the full live test)
+#
+# To graduate a recipe: pin a real, tested image in its docker-compose.yml,
+# add tools/ci/backends/<recipe>.yml (+ .sh) if it needs a backend to talk
+# to, give it a probe in tools/recipe-up.sh, and remove it from this file.
+03-ha-concierge
+04-proxmox-auditor
+05-qbittorrent-manager
+06-arr-butler
+07-pihole-detective
+08-nas-warden
