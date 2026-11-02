@@ -1,0 +1,33 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "02-docker-forensics",
+  "number": 2,
+  "title": "Docker Forensics",
+  "summary": "docker-mcp scoped with ALLOW_LIST: the assistant sees and manages only the containers you name.",
+  "status": "works-ootb",
+  "transport": "stdio",
+  "chapter": "Chapter 4, Recipe 2",
+  "tags": [
+    "docker",
+    "containers",
+    "diagnostics"
+  ],
+  "upstream": {
+    "description": "Community docker-mcp server (pin your choice)",
+    "image": "docker-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "ALLOW_LIST",
+      "description": "Comma-separated container names the assistant may see. This is the security boundary.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "plex,radarr,sonarr"
+    }
+  ],
+  "firstQuestion": "Which containers have restarted more than once this week, and why?",
+  "scopeNotes": [
+    "The only recipe that mounts the Docker socket.",
+    "ALLOW_LIST is the boundary; unlisted containers are invisible."
+  ]
+}

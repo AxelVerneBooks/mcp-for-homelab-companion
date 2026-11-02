@@ -1,0 +1,55 @@
+name: recipes
+
+# Every recipe, really spun up in a clean runner: start the stack, wait for
+# health, then speak MCP to it (initialize → tools/list → a real tool call).
+# A broken recipe fails the build. See tools/recipe-up.sh.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Weekly, so upstream image/package drift is caught even when nobody pushes.
+    - cron: "17 6 * * 1"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recipes-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    name: smoke.sh (all compose configs + Tier 2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./tools/smoke.sh
+
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      recipes: ${{ steps.list.outputs.recipes }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        # Discovered, not hard-coded: a new recipe folder is tested automatically.
+        run: |
+          echo "recipes=$(ls -d recipes/*/ | xargs -n1 basename | jq -Rnc '[inputs]')" >> "$GITHUB_OUTPUT"
+
+  recipe-up:
+    name: up · ${{ matrix.recipe }}
+    needs: discover
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        recipe: ${{ fromJSON(needs.discover.outputs.recipes) }}
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker version --format 'docker {{.Server.Version}}' && docker compose version
+      - run: ./tools/recipe-up.sh "${{ matrix.recipe }}"

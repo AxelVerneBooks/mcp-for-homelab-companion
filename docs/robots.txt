@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://axelvernebooks.github.io/mcp-for-homelab-companion/sitemap.xml

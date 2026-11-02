@@ -1,0 +1,22 @@
+name: Unsafe default
+description: A recipe ships with a scope, mount, or network setting that's wider than it should be.
+labels: ["security"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For problems in this repo's **defaults** (e.g. a recipe that mounts the Docker socket, a writable mount, a write tool enabled by default).
+        If you found a vulnerability in an **upstream MCP server**, report it to that project. If it's sensitive, use [private vulnerability reporting](https://github.com/AxelVerneBooks/mcp-for-homelab-companion/security/advisories/new) instead of a public issue.
+  - type: input
+    id: recipe
+    attributes:
+      label: Recipe / file
+      placeholder: recipes/04-proxmox-auditor/docker-compose.yml
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What's too wide, and what should it be?
+    validations:
+      required: true

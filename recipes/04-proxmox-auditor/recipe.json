@@ -1,0 +1,47 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "04-proxmox-auditor",
+  "number": 4,
+  "title": "Proxmox Auditor",
+  "summary": "Proxmox VE over MCP with a PVEAuditor-role API token.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9104,
+  "chapter": "Chapter 5, Recipe 4",
+  "tags": [
+    "proxmox",
+    "virtualization",
+    "infrastructure"
+  ],
+  "upstream": {
+    "description": "Community Proxmox MCP server (pin your choice)",
+    "image": "proxmox-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "PVE_HOST",
+      "description": "Proxmox VE API URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "https://pve.local:8006"
+    },
+    {
+      "name": "PVE_TOKEN",
+      "description": "API token with the PVEAuditor role (user@realm!tokenid=secret).",
+      "isRequired": true,
+      "isSecret": true
+    },
+    {
+      "name": "VERIFY_TLS",
+      "description": "Verify the PVE certificate. Prefer installing your CA over disabling.",
+      "isRequired": false,
+      "isSecret": false,
+      "default": "true"
+    }
+  ],
+  "firstQuestion": "Which VMs haven't been touched in 90 days and how much RAM are they hoarding?",
+  "scopeNotes": [
+    "PVEAuditor role only for week one.",
+    "Promote write capability deliberately, with a menu-notes entry."
+  ]
+}

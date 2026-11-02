@@ -1,0 +1,28 @@
+name: catalog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install jsonschema
+      - name: Validate recipe.json / server.json
+        run: python3 tools/validate_metadata.py
+      - name: docs/ is regenerated
+        run: python3 tools/build_docs.py --check
+      - name: Compose files parse
+        run: |
+          for f in recipes/*/docker-compose.yml; do
+            echo "== $f"; docker compose -f "$f" config -q
+          done

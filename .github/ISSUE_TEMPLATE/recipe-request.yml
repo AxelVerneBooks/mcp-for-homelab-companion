@@ -1,0 +1,28 @@
+name: Recipe request
+description: Suggest a homelab service that deserves an MCP recipe.
+labels: ["recipe-request"]
+body:
+  - type: input
+    id: service
+    attributes:
+      label: Service
+      placeholder: Jellyfin, UniFi, Frigate, OPNsense, …
+    validations:
+      required: true
+  - type: input
+    id: server
+    attributes:
+      label: Existing MCP server (if any)
+      description: Link to the repo or its MCP Registry entry (registry.modelcontextprotocol.io).
+  - type: textarea
+    id: question
+    attributes:
+      label: The first question you'd ask it
+      description: Every recipe is built around one concrete question. What's yours?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Read-only scope
+      description: How would you scope it for week one? (dedicated user, viewer role, read-only token, network isolation…)

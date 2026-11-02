@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: The book — MCP for the Homelab
+    url: https://axelverne.com
+    about: The why, the scoping ritual, the security model, and the error catalog behind these recipes.
+  - name: Recipe catalog
+    url: https://axelvernebooks.github.io/mcp-for-homelab-companion/
+    about: Browse every recipe, its stanza, env vars, and scope notes.

@@ -1,0 +1,46 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "05-qbittorrent-manager",
+  "number": 5,
+  "title": "qBittorrent Night Manager",
+  "summary": "qBittorrent over MCP for 2 a.m. diagnostics, on qBit's network only.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9105,
+  "chapter": "Chapter 5, Recipe 5",
+  "tags": [
+    "qbittorrent",
+    "downloads",
+    "media"
+  ],
+  "upstream": {
+    "description": "Community qBittorrent MCP server (pin your choice)",
+    "image": "qbit-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "QBIT_URL",
+      "description": "qBittorrent WebUI URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "http://qbittorrent:8080"
+    },
+    {
+      "name": "QBIT_USER",
+      "description": "DEDICATED qBit account for the assistant.",
+      "isRequired": true,
+      "isSecret": false
+    },
+    {
+      "name": "QBIT_PASS",
+      "description": "Password for the dedicated account.",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "Why is nothing downloading — check the queue and any stalled transfers.",
+  "scopeNotes": [
+    "Dedicated qBit account: the account is the scope.",
+    "Network-exiled to qBit's segment."
+  ]
+}

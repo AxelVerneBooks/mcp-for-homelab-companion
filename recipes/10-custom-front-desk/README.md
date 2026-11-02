@@ -7,7 +7,7 @@ The only recipe that ships its own backend: a **mock pool-controller API** stand
 ## Run
 
 ```bash
-docker compose up -d --build
+docker compose up -d --build --wait   # --wait: returns once both services are healthy
 curl -s http://localhost:9110/mcp -X POST \
   -H 'Content-Type: application/json' -H 'Accept: application/json, text/event-stream' \
   -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2026-07-28","capabilities":{},"clientInfo":{"name":"curl","version":"0"}}}'
@@ -31,7 +31,11 @@ curl -s http://localhost:9110/mcp -X POST \
 
 ## Going real (the 30-minute path)
 
-1. Delete the `pool-api` service from the compose file.
+1. Delete the `pool-api` service from the compose file, and the `depends_on:` block under `pool-mcp` that waits for it.
 2. `cp .env.example .env`, set `POOL_API_URL` and `POOL_API_KEY` to the vendor's.
 3. Rebuild, re-run the curl above, and wire the stanza.
 4. Week of clean reads → uncomment `set_pump_mode` per the checklist in the source.
+
+---
+
+From the free, MIT-licensed companion repo for [_MCP for the Homelab_](https://axelverne.com) by Axel Verne. The book covers this recipe in Chapter 6, Recipe 10. Back to the [recipe catalog](https://axelvernebooks.github.io/mcp-for-homelab-companion/).

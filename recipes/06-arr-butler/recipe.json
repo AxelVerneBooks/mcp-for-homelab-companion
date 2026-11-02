@@ -1,0 +1,41 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "06-arr-butler",
+  "number": 6,
+  "title": "Radarr Butler (the *arr pattern)",
+  "summary": "Radarr over MCP, and the template for Sonarr, Prowlarr and Lidarr.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9106,
+  "chapter": "Chapter 5, Recipe 6",
+  "tags": [
+    "radarr",
+    "sonarr",
+    "arr",
+    "media"
+  ],
+  "upstream": {
+    "description": "Community *arr MCP server (pin your choice)",
+    "image": "arr-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "ARR_URL",
+      "description": "Radarr base URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "http://radarr:7878"
+    },
+    {
+      "name": "ARR_KEY",
+      "description": "Radarr API key (Settings → General → Security).",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "What's sitting in Radarr's queue, and what's been stuck longest?",
+  "scopeNotes": [
+    "Read-only until the couch-grab day.",
+    "One server per *arr app; never share."
+  ]
+}

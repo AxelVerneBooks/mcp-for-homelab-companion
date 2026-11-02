@@ -1,0 +1,40 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "08-nas-warden",
+  "number": 8,
+  "title": "NAS Health Warden",
+  "summary": "TrueNAS SCALE over MCP: pool health, disk temps, dataset usage. Read-only, full stop.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9108,
+  "chapter": "Chapter 5, Recipe 8",
+  "tags": [
+    "truenas",
+    "nas",
+    "storage"
+  ],
+  "upstream": {
+    "description": "Community TrueNAS MCP server (pin your choice)",
+    "image": "truenas-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "TN_URL",
+      "description": "TrueNAS websocket URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "wss://truenas.local/websocket"
+    },
+    {
+      "name": "TN_KEY",
+      "description": "READ-ONLY API key for a dedicated user.",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "How is the pool, and is any disk running hotter than its siblings?",
+  "scopeNotes": [
+    "Read-only API key, full stop.",
+    "Dedicated user under Credentials → Users."
+  ]
+}

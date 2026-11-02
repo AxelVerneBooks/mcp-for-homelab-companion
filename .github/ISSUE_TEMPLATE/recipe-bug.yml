@@ -1,0 +1,67 @@
+name: Recipe doesn't work
+description: A recipe fails to validate, start, handshake, or answer its first question.
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting. **Never paste tokens, passwords, or a filled `.env`** — redact them to `***`.
+        Run `./tools/smoke.sh` first if you can; its output narrows things down fast.
+  - type: dropdown
+    id: recipe
+    attributes:
+      label: Recipe
+      options:
+        - 01-media-librarian
+        - 02-docker-forensics
+        - 03-ha-concierge
+        - 04-proxmox-auditor
+        - 05-qbittorrent-manager
+        - 06-arr-butler
+        - 07-pihole-detective
+        - 08-nas-warden
+        - 09-grafana-qa
+        - 10-custom-front-desk
+        - tools/smoke.sh
+        - docs site / metadata
+    validations:
+      required: true
+  - type: dropdown
+    id: stage
+    attributes:
+      label: Where does it fail?
+      options:
+        - docker compose config / validation
+        - container start
+        - MCP handshake / client can't connect
+        - tools listed but calls fail
+        - wrong or unsafe behavior
+    validations:
+      required: true
+  - type: input
+    id: image
+    attributes:
+      label: Server image and pinned tag
+      description: What you replaced `vX.Y.Z` with.
+      placeholder: ghcr.io/example/proxmox-mcp:1.4.2
+  - type: input
+    id: client
+    attributes:
+      label: MCP client and version
+      placeholder: Claude Desktop 1.x, Claude Code 2.x, …
+  - type: textarea
+    id: env
+    attributes:
+      label: Host environment
+      description: OS, `docker version`, `docker compose version`, and the backend version (e.g. PVE 9.0, Pi-hole v6).
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: What happened
+      description: Commands you ran and the output / `docker compose logs`. Redact secrets.
+      render: text
+    validations:
+      required: true

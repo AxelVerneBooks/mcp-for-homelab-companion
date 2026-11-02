@@ -1,0 +1,39 @@
+{
+  "$schema": "../../tools/schemas/recipe.schema.json",
+  "id": "03-ha-concierge",
+  "number": 3,
+  "title": "Home Assistant Concierge",
+  "summary": "Home Assistant over MCP, scoped to a dedicated houseguest-permission user.",
+  "status": "needs-backend",
+  "transport": "streamable-http",
+  "port": 9103,
+  "chapter": "Chapter 5, Recipe 3",
+  "tags": [
+    "home-assistant",
+    "smart-home"
+  ],
+  "upstream": {
+    "description": "Community Home Assistant MCP server (pin your choice)",
+    "image": "ha-mcp:vX.Y.Z"
+  },
+  "environmentVariables": [
+    {
+      "name": "HASS_URL",
+      "description": "Home Assistant base URL.",
+      "isRequired": true,
+      "isSecret": false,
+      "placeholder": "http://homeassistant.local:8123"
+    },
+    {
+      "name": "HASS_TOKEN",
+      "description": "Long-lived access token for a DEDICATED, houseguest-scoped user.",
+      "isRequired": true,
+      "isSecret": true
+    }
+  ],
+  "firstQuestion": "Run the movie scene and tell me what it actually changed.",
+  "scopeNotes": [
+    "Dedicated HA user; never your personal token.",
+    "Locks, alarm panels and garage doors stay off the menu."
+  ]
+}

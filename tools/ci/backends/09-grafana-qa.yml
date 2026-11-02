@@ -1,0 +1,22 @@
+# CI-only backend for recipe 09: a throwaway Grafana for the MCP server to
+# read. Layered on the recipe's own compose file by tools/recipe-up.sh —
+# the recipe itself is tested unmodified.
+services:
+  grafana:
+    image: grafana/grafana:13.2.5
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: ci-admin
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+    ports:
+      - "127.0.0.1:3000:3000"   # for the prep script (service account, seed data)
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/health | grep -q '\"database\": *\"ok\"'"]
+      interval: 3s
+      timeout: 3s
+      retries: 40
+
+  grafana-mcp:
+    depends_on:
+      grafana:
+        condition: service_healthy
