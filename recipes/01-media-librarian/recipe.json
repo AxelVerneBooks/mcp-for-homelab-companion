@@ -14,7 +14,7 @@
   ],
   "upstream": {
     "description": "Reference filesystem MCP server (modelcontextprotocol/servers)",
-    "image": "mcp/filesystem:vX.Y.Z",
+    "image": "mcp/filesystem:1.0.2",
     "repository": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
   },
   "environmentVariables": [

@@ -6,8 +6,10 @@
                          (vendored copy of the MCP Registry 2025-12-11 schema)
 
 Also cross-checks recipe.json against docker-compose.yml: every variable in
-environmentVariables must appear in the compose file, and the declared port
-must be published there.
+environmentVariables must appear in the compose file, the declared port
+must be published there, and upstream.image must match the image the recipe
+actually uses (compose file or README stanza), so a re-pin can't leave the
+catalog advertising the old tag.
 
 Usage: pip install jsonschema && python3 tools/validate_metadata.py
 """
@@ -47,6 +49,10 @@ for d in dirs:
     port = recipe.get("port")
     if port and f'"{port}:' not in compose:
         errors.append(f"{rel}/recipe.json: port {port} not published in docker-compose.yml")
+    image = recipe.get("upstream", {}).get("image")
+    readme = d / "README.md"
+    if image and image not in compose and not (readme.is_file() and image in readme.read_text()):
+        errors.append(f"{rel}/recipe.json: upstream.image {image} not used in docker-compose.yml or README.md")
 
     sj = d / "server.json"
     if sj.is_file():

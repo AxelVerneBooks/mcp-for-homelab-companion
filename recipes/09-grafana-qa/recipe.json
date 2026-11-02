@@ -15,7 +15,7 @@
   ],
   "upstream": {
     "description": "Grafana MCP server",
-    "image": "grafana-mcp:vX.Y.Z",
+    "image": "grafana/mcp-grafana:2.1.1",
     "registryName": "io.github.grafana/mcp-grafana",
     "repository": "https://github.com/grafana/mcp-grafana"
   },
@@ -32,6 +32,13 @@
       "description": "Service-account token with the Viewer role.",
       "isRequired": true,
       "isSecret": true
+    },
+    {
+      "name": "MCP_ALLOWED_HOSTS",
+      "description": "Host-header allowlist: comma-separated host:port values your MCP client uses to reach this server.",
+      "isRequired": false,
+      "isSecret": false,
+      "default": "localhost:9109,127.0.0.1:9109"
     }
   ],
   "firstQuestion": "What does the last hour of CPU look like on the hypervisor, and does it correlate with anything else on that dashboard?",

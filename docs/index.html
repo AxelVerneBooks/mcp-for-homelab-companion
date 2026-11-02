@@ -93,7 +93,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
     &quot;args&quot;: [&quot;run&quot;, &quot;--rm&quot;, &quot;-i&quot;,
              &quot;--network&quot;, &quot;none&quot;,
              &quot;-v&quot;, &quot;${MEDIA_DIR:-/tank/media}:/media:ro&quot;,
-             &quot;mcp/filesystem:vX.Y.Z&quot;, &quot;/media&quot;] } } }</code></pre>
+             &quot;mcp/filesystem:1.0.2&quot;, &quot;/media&quot;] } } }</code></pre>
     <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>MEDIA_DIR</code></td><td>optional</td><td>Directory on the Docker host to expose read-only as /media.</td></tr></tbody></table>
     <ul class="scope"><li>:ro mount: the server physically cannot write.</li><li>network_mode: none: nothing to phone home to.</li></ul>
   </details>
@@ -242,7 +242,7 @@ cd mcp-for-homelab-companion && ./tools/smoke.sh</code></pre>
     <p class="meta">Upstream: <a href="https://github.com/grafana/mcp-grafana">Grafana MCP server</a> · registry: <code>io.github.grafana/mcp-grafana</code><br>Book: <a href="https://axelverne.com"><em>MCP for the Homelab</em></a>, Chapter 5, Recipe 9</p>
     <pre><code>{ &quot;mcpServers&quot;: { &quot;grafana-qa&quot;: {
     &quot;url&quot;: &quot;http://&lt;docker-host&gt;:9109/mcp&quot; } } }</code></pre>
-    <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>GRAFANA_URL</code></td><td>required</td><td>Grafana base URL.</td></tr><tr><td><code>GRAFANA_TOKEN</code></td><td>required · secret</td><td>Service-account token with the Viewer role.</td></tr></tbody></table>
+    <table><thead><tr><th>Variable</th><th></th><th>Purpose</th></tr></thead><tbody><tr><td><code>GRAFANA_URL</code></td><td>required</td><td>Grafana base URL.</td></tr><tr><td><code>GRAFANA_TOKEN</code></td><td>required · secret</td><td>Service-account token with the Viewer role.</td></tr><tr><td><code>MCP_ALLOWED_HOSTS</code></td><td>optional</td><td>Host-header allowlist: comma-separated host:port values your MCP client uses to reach this server.</td></tr></tbody></table>
     <ul class="scope"><li>Viewer role only.</li><li>Dashboards for graphs; MCP for questions.</li></ul>
   </details>
   <footer><a href="https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/09-grafana-qa">Open recipe folder →</a></footer>

@@ -18,7 +18,7 @@
       ],
       "upstream": {
         "description": "Reference filesystem MCP server (modelcontextprotocol/servers)",
-        "image": "mcp/filesystem:vX.Y.Z",
+        "image": "mcp/filesystem:1.0.2",
         "repository": "https://github.com/modelcontextprotocol/servers/tree/main/src/filesystem"
       },
       "environmentVariables": [
@@ -35,7 +35,7 @@
         ":ro mount: the server physically cannot write.",
         "network_mode: none: nothing to phone home to."
       ],
-      "stanza": "{ \"mcpServers\": { \"media-librarian\": {\n    \"command\": \"docker\",\n    \"args\": [\"run\", \"--rm\", \"-i\",\n             \"--network\", \"none\",\n             \"-v\", \"${MEDIA_DIR:-/tank/media}:/media:ro\",\n             \"mcp/filesystem:vX.Y.Z\", \"/media\"] } } }",
+      "stanza": "{ \"mcpServers\": { \"media-librarian\": {\n    \"command\": \"docker\",\n    \"args\": [\"run\", \"--rm\", \"-i\",\n             \"--network\", \"none\",\n             \"-v\", \"${MEDIA_DIR:-/tank/media}:/media:ro\",\n             \"mcp/filesystem:1.0.2\", \"/media\"] } } }",
       "url": "https://github.com/AxelVerneBooks/mcp-for-homelab-companion/tree/main/recipes/01-media-librarian"
     },
     {
@@ -347,7 +347,7 @@
       ],
       "upstream": {
         "description": "Grafana MCP server",
-        "image": "grafana-mcp:vX.Y.Z",
+        "image": "grafana/mcp-grafana:2.1.1",
         "registryName": "io.github.grafana/mcp-grafana",
         "repository": "https://github.com/grafana/mcp-grafana"
       },
@@ -364,6 +364,13 @@
           "description": "Service-account token with the Viewer role.",
           "isRequired": true,
           "isSecret": true
+        },
+        {
+          "name": "MCP_ALLOWED_HOSTS",
+          "description": "Host-header allowlist: comma-separated host:port values your MCP client uses to reach this server.",
+          "isRequired": false,
+          "isSecret": false,
+          "default": "localhost:9109,127.0.0.1:9109"
         }
       ],
       "firstQuestion": "What does the last hour of CPU look like on the hypervisor, and does it correlate with anything else on that dashboard?",
