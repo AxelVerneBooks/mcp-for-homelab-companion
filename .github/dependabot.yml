@@ -1,0 +1,50 @@
+# Dependabot version updates — see CONTRIBUTING.md ("Dependency update policy").
+#
+# What is tracked:
+#   - docker-compose: every `image:` tag in recipes/*/docker-compose.yml
+#   - docker:         every `FROM` line in Dockerfiles under recipes/
+#                     (Dependabot matches any file name containing
+#                     "Dockerfile", so mock-api.Dockerfile is included)
+#   - github-actions: every `uses:` in .github/workflows/*.yml
+#
+# Placeholder tags of the form `vX.Y.Z` (see README "Versioning rule") are
+# not versions, so Dependabot cannot propose updates for them. Once a real
+# tag is pinned in place of a placeholder, it is picked up automatically.
+#
+# Security updates (Dependabot alerts -> security PRs) are enabled
+# separately in Settings → Code security; they reuse this file's settings.
+
+version: 2
+updates:
+  - package-ecosystem: "docker-compose"
+    directories:
+      - "/recipes/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps(compose)"
+
+  - package-ecosystem: "docker"
+    directories:
+      - "/recipes/*"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "deps(docker)"
+
+  - package-ecosystem: "github-actions"
+    # "/" means .github/workflows/ for this ecosystem.
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    commit-message:
+      prefix: "deps(actions)"
+    groups:
+      github-actions:
+        patterns:
+          - "*"
