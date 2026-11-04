@@ -5,6 +5,9 @@
 # Tier 2: live checks on the two recipes that are self-contained:
 #           - 01-media-librarian: mount-check (demo tree readable, read-only)
 #           - 10-custom-front-desk: full MCP initialize handshake over HTTP
+# Tier 3: backend preflights (opt-in) — every recipe that ships a `preflight`
+#         service AND has a filled-in .env gets its preflight run against
+#         your real backend. Recipes without a .env are skipped, not failed.
 #
 # Usage: ./tools/smoke.sh        Exit 0 = green.
 set -euo pipefail
@@ -13,9 +16,10 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT="$ROOT/tools/.smoke-results"
 mkdir -p "$OUT"
 
-pass=0; fail=0
+pass=0; fail=0; skip=0
 ok()   { echo "    ✓ $1"; pass=$((pass+1)); }
 bad()  { echo "    ✗ $1"; fail=$((fail+1)); }
+skp()  { echo "    - $1"; skip=$((skip+1)); }
 
 echo "== Tier 1: compose config validation (all recipes) =="
 for dir in "$ROOT"/recipes/*/; do
@@ -69,11 +73,29 @@ else
   bad "no MCP answer on :9110 — see $OUT/10.init.json"
 fi
 
+
+echo
+echo "== Tier 3: backend preflights (recipes with a preflight service + .env) =="
+for dir in "$ROOT"/recipes/*/; do
+  name="$(basename "$dir")"
+  grep -q '^  preflight:' "$dir/docker-compose.yml" || continue
+  if [[ ! -f "$dir/.env" ]]; then
+    skp "$name skipped (no .env — cp .env.example .env to enable)"
+    continue
+  fi
+  if docker compose -f "$dir/docker-compose.yml" run --rm preflight \
+      > "$OUT/$name.preflight.txt" 2>&1; then
+    ok "$name preflight (backend reachable, credential accepted)"
+  else
+    bad "$name preflight — see $OUT/$name.preflight.txt"
+  fi
+done
+
 echo
 echo "== teardown =="
 docker compose -f "$ROOT/recipes/10-custom-front-desk/docker-compose.yml" \
   down --remove-orphans >/dev/null 2>&1 || true
 
 echo
-echo "smoke: $pass passed, $fail failed"
+echo "smoke: $pass passed, $fail failed, $skip skipped"
 [[ $fail -eq 0 ]] || exit 1

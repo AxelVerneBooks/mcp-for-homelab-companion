@@ -20,10 +20,18 @@ recipes/
   08-nas-warden/           TrueNAS MCP                        → HTTP · needs TrueNAS + key
   09-grafana-qa/           Grafana MCP                        → HTTP · needs Grafana + viewer token
   10-custom-front-desk/    full working example server        → HTTP · works OOTB (mock backend)
-tools/smoke.sh            validates all 10 configs; live-tests 01 (mount) + 10 (handshake)
+  11-forge-clerk/          Gitea / Forgejo MCP                → HTTP · needs forge + read token
+  12-paperless-archivist/  Paperless-ngx MCP                  → HTTP · needs Paperless + view-only token
+  13-immich-curator/       Immich MCP                         → HTTP · needs Immich + non-admin API key
+  14-nextcloud-filer/      Nextcloud MCP                      → HTTP · needs Nextcloud + app password
+  15-uptime-sentinel/      Uptime Kuma MCP                    → HTTP · needs Uptime Kuma + API key
+tools/smoke.sh            validates every config; live-tests 01 (mount) + 10 (handshake);
+                          runs 11–15 backend preflights when their .env exists
 ```
 
-**Transport note:** the shelf servers you spawn *from your client* (01, 02) are stdio — no ports, no HTTP. Recipes 03–10 serve streamable HTTP from your compose stack. Every recipe's README shows the correct stanza shape for its transport (book, Chapter 3).
+Recipes 11–15 are companion-only additions (not in the book's Chapter 10 appendix). Each ships a `preflight` service — `docker compose run --rm preflight` — that checks, from inside a container, that the backend is reachable and the credential in `.env` is accepted, before you run the MCP server at all.
+
+**Transport note:** the shelf servers you spawn *from your client* (01, 02) are stdio — no ports, no HTTP. Recipes 03–15 serve streamable HTTP from your compose stack. Every recipe's README shows the correct stanza shape for its transport (book, Chapter 3).
 
 ## The 5-minute path (zero external services)
 
@@ -31,12 +39,12 @@ tools/smoke.sh            validates all 10 configs; live-tests 01 (mount) + 10 (
 ./tools/smoke.sh
 ```
 
-The smoke script runs two tiers: **Tier 1** validates every recipe's compose file (syntax + env shape), so a typo anywhere in the repo announces itself; **Tier 2** live-tests the two self-contained recipes — recipe 01's read-only mount against the baked-in demo tree, and recipe 10's *actual MCP handshake* over HTTP against its mock backend. If smoke passes, your Docker setup and the repo's config patterns are sound; everything else is the same pattern pointed at different APIs.
+The smoke script runs three tiers: **Tier 1** validates every recipe's compose file (syntax + env shape), so a typo anywhere in the repo announces itself; **Tier 2** live-tests the two self-contained recipes — recipe 01's read-only mount against the baked-in demo tree, and recipe 10's *actual MCP handshake* over HTTP against its mock backend; **Tier 3** (opt-in) runs the backend preflight of every recipe that has one *and* a filled-in `.env` — recipes without a `.env` are reported as skipped, not failed. If smoke passes, your Docker setup and the repo's config patterns are sound; everything else is the same pattern pointed at different APIs.
 
 ## The general ritual (every recipe, every time)
 
 1. `cd recipes/0X-name && cp .env.example .env && $EDITOR .env`
-2. Run the recipe's validation command from its README (stdio recipes: `docker compose run --rm ...`; HTTP recipes: `docker compose up -d --build`).
+2. Run the recipe's validation command from its README (stdio recipes: `docker compose run --rm ...`; recipes with a preflight: `docker compose run --rm preflight`; HTTP recipes: `docker compose up -d --build`).
 3. Add the stanza from the recipe's README to your MCP client config — note whether it's a `command` (stdio) or `url` (HTTP) stanza.
 4. Restart the client, ask the recipe's first question.
 5. When it works, *then* consider promoting read-only scope — never before. (Book, Chapter 7.)

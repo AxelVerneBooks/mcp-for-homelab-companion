@@ -1,0 +1,41 @@
+name: mcp-recipe-13
+
+# Recipe 13 — Immich Curator (needs backend)
+#
+# Requires: Immich reachable at IMMICH_URL and an API key created by a
+# DEDICATED non-admin user. Immich API keys act as the user that created
+# them, so a key made on the admin account carries admin reach. Starts and
+# errors loudly until .env is filled.
+
+services:
+  immich-mcp:
+    # PLACEHOLDER TAG — pin the current release of the Immich MCP server
+    image: immich-mcp:vX.Y.Z
+    environment:
+      IMMICH_URL: ${IMMICH_URL}
+      IMMICH_API_KEY: ${IMMICH_API_KEY}
+    ports:
+      - "9113:9113"
+    restart: unless-stopped
+
+  # Validation helper only — proves IMMICH_URL is reachable from a container
+  # and the key is accepted, then prints which user the key acts as. Never
+  # prints the key. Run: docker compose run --rm preflight
+  preflight:
+    image: library/alpine:3.20
+    profiles: ["tools"]
+    environment:
+      IMMICH_URL: ${IMMICH_URL}
+      IMMICH_API_KEY: ${IMMICH_API_KEY}
+    read_only: true
+    command:
+      - sh
+      - -c
+      - |
+        set -e
+        : "$${IMMICH_URL:?set IMMICH_URL in .env}"
+        : "$${IMMICH_API_KEY:?set IMMICH_API_KEY in .env}"
+        echo "reachable: $$(wget -q -T 10 -O- "$${IMMICH_URL}/api/server/ping")"
+        me=$$(wget -q -T 10 -O- --header "x-api-key: $${IMMICH_API_KEY}" "$${IMMICH_URL}/api/users/me")
+        echo "key OK, acting as: $$(echo "$$me" | grep -o '"email":"[^"]*"')"
+        echo "$$me" | grep -q '"isAdmin":true' && echo "WARNING: this key belongs to an ADMIN user — use a dedicated non-admin user" || true
